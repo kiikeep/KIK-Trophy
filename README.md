@@ -8,6 +8,8 @@ Useful after creating a new user or reinstalling/resetting your console, when yo
 
 Windows 10/11 x64, Intel or AMD. Extract the entire ZIP and open **KIK Trophy.exe**.
 
+<img width="1632" height="1180" alt="{5C848C2A-62E2-4A17-B0A4-EEA65D9BFC38}" src="https://github.com/user-attachments/assets/158f34f3-114b-4635-b28b-c9ee9274f59f" />
+
 ## Which files do you need?
 
 The two `trophy2` folders serve different purposes:
