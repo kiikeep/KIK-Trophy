@@ -1,0 +1,15 @@
+node_modules/
+dist/
+output/
+release/
+*.log
+*.zip
+*.DAT
+*.dat
+*.UCP
+*.ucp
+*.kik-report.json
+.DS_Store
+Thumbs.db
+preferences.json
+.kik-prefs-*/

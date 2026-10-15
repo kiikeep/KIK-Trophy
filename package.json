@@ -1,0 +1,21 @@
+{
+  "name": "kik-trophy-desktop-source",
+  "version": "1.0.0",
+  "description": "KIK Trophy desktop development workspace",
+  "scripts": {
+    "start": "electron app",
+    "test": "node tests/core.test.cjs && node tests/preferences.test.cjs && node tests/locales.test.cjs && node tests/batch.test.cjs && node tests/main.test.cjs",
+    "test:ui": "node tests/ui.test.cjs",
+    "package:win": "electron-packager app KIK-Trophy --electron-version=44.7.2 --platform=win32 --arch=x64 --out=dist --overwrite --icon=app/icon.ico --executable-name=\"KIK Trophy\" --app-version=1.0.0 --build-version=1.0.0 --win32metadata.CompanyName=kiikeep --win32metadata.ProductName=\"KIK Trophy\" && node rebrand.mjs dist/KIK-Trophy-win32-x64"
+  },
+  "devDependencies": {
+    "electron": "44.7.2",
+    "resedit": "3.1.0",
+    "pe-library": "2.0.1",
+    "playwright": "1.62.1",
+    "@electron/packager": "20.3.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
