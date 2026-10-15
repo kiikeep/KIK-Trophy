@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>KIK Trophy</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <svg class="defs" xmlns="http://www.w3.org/2000/svg">
+      <symbol id="i-trophy" viewBox="0 0 24 24">
+        <path
+          d="M8 3h8v7a4 4 0 0 1-8 0V3ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 14v5m-4 2h8m-6-2h4"
+        />
+      </symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24">
+        <path d="M3 7V5h7l2 2h9v13H3V7Z" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="m12 3 8 3v6c0 5-8 9-8 9S4 17 4 12V6l8-3Z" />
+        <path d="m8 12 3 3 5-6" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M4 12h16m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3v12m-5-5 5 5 5-5M4 15v6h16v-6" />
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="10" cy="10" r="6" />
+        <path d="m15 15 5 5" />
+      </symbol>
+      <symbol id="i-file" viewBox="0 0 24 24">
+        <path d="M5 3h9l5 5v13H5V3Zm9 0v6h5M9 14h6M9 17h4" />
+      </symbol>
+      <symbol id="i-id" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="8" cy="10" r="2" />
+        <path d="M5 16c0-4 6-4 6 0m3-6h4m-4 4h4" />
+      </symbol>
+    </svg>
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow">KIK TROPHY <span>DESKTOP</span></div>
+          <h1>PS5 Trophy File Manager</h1>
+          <p class="subtitle">
+            Inspect backups and export copies for another profile.
+          </p>
+        </div>
+        <div class="headerActions">
+          <button
+            id="languageToggle"
+            class="languageButton"
+            title="Switch language"
+          >
+            <span id="languageFlag"></span
+            ><span id="languageCode">EN</span></button
+          ><span class="offline"><i></i> Todo en tu PC</span
+          ><button id="openFolder">
+            <svg><use href="#i-folder" /></svg>Abrir carpeta</button
+          ><button class="primary" id="openFiles">
+            <svg><use href="#i-plus" /></svg>Añadir archivos
+          </button>
+        </div>
+        <div id="languageMenu" class="languageMenu hidden">
+          <button data-lang="en">🇬🇧 English</button
+          ><button data-lang="es">🇪🇸 Español</button
+          ><button data-lang="zh-CN">🇨🇳 简体中文</button
+          ><button data-lang="it">🇮🇹 Italiano</button
+          ><button data-lang="fr">🇫🇷 Français</button
+          ><button data-lang="ja">🇯🇵 日本語</button
+          ><button data-lang="ru">🇷🇺 Русский</button>
+        </div>
+      </header>
+      <section id="welcome" class="welcome">
+        <div class="welcomeMain" id="dropzone">
+          <div class="bigTrophy">
+            <svg><use href="#i-trophy" /></svg>
+          </div>
+          <span class="eyebrow" id="welcomeEyebrow"
+            >TRANSFER TROPHIES BETWEEN USERS</span
+          >
+          <h2 id="welcomeTitle">Move your trophy history to another user.</h2>
+          <p id="welcomeHelp">
+            For a new local user or after a system reinstall. Copy both trophy2
+            folders from your PS5 into one backup folder or ZIP.
+          </p>
+          <div class="backupPaths">
+            <div>
+              <b>USER DATA</b><code>/user/home/&lt;USER_ID&gt;/trophy2/</code>
+            </div>
+            <div><b>CATALOGS</b><code>/user/trophy2/</code></div>
+          </div>
+          <p id="keepPaths">
+            Keep the two folder paths separate inside the backup; do not merge
+            the trophy2 folders.
+          </p>
+          <ol class="welcomeSteps">
+            <li id="guideImport">
+              Open the backup folder or ZIP and select the titles you want to
+              transfer.
+            </li>
+            <li id="guideExport">
+              Enter the destination user's IDs and export one title or a batch.
+            </li>
+            <li id="guideLaunch">
+              On the PS5, open each game at least once with the destination user
+              before restoring its DAT.
+            </li>
+            <li id="guideRestore">
+              Copy only the exported TRPTITLE.DAT into the matching title folder
+              under /user/home/&lt;USER_ID&gt;/trophy2/.
+            </li>
+          </ol>
+          <p id="welcomeDropHint">
+            Drop a backup folder or ZIP here, or use Open folder below.
+          </p>
+          <button class="primary" id="welcomeOpen">
+            <svg><use href="#i-folder" /></svg>Explorar mis respaldos
+          </button>
+          <div class="fileChips">
+            <span>TRPTITLE.DAT</span><span>TROPHY.UCP</span><span>.ZIP</span>
+          </div>
+        </div>
+        <div class="restoreNote">
+          <svg><use href="#i-shield" /></svg>
+          <p id="restoreNoteText">
+            Only TRPTITLE.DAT is modified. Restoring other trophy files has not
+            been tested; let your console generate them by launching the game at
+            least once. Keep a copy of the current DAT before replacing it.
+          </p>
+        </div>
+      </section>
+      <section id="workspace" class="workspace hidden">
+        <aside class="library">
+          <div class="libraryHead">
+            <span>RESPALDOS</span><b id="libraryCount">0</b>
+          </div>
+          <div class="batchToolbar">
+            <button id="selectAll" class="textbutton">Select all</button
+            ><span id="batchCount">0 selected</span>
+          </div>
+          <button id="batchEdit" class="wide batchButton">
+            Change IDs in batch
+          </button>
+          <div id="gameList"></div>
+          <button class="textbutton clearButton" id="clear">
+            Vaciar biblioteca
+          </button>
+          <div class="libraryNote">
+            <svg><use href="#i-shield" /></svg>
+            <p>Los archivos que abres se conservan sin cambios.</p>
+          </div>
+        </aside>
+        <section class="detail">
+          <article class="hero">
+            <div class="cover" id="cover">
+              <svg><use href="#i-trophy" /></svg>
+            </div>
+            <div class="heroText">
+              <div class="titleMeta">
+                <span id="gameNpwr"></span
+                ><span id="catalogTag" class="tag"></span>
+              </div>
+              <h2 id="gameTitle"></h2>
+              <p id="sourcePath" class="source"></p>
+              <span class="validated"
+                ><svg><use href="#i-shield" /></svg><span id="integrity"></span
+              ></span>
+            </div>
+            <button class="primary" id="editOwner">
+              <svg><use href="#i-id" /></svg>Cambiar propietario
+            </button>
+          </article>
+          <div id="warnings" class="warning hidden"></div>
+          <div class="stats">
+            <article>
+              <span>DESBLOQUEADOS</span><strong id="earned"></strong
+              ><small id="earnedOf"></small>
+            </article>
+            <article>
+              <span>POR DESCUBRIR</span><strong id="locked"></strong
+              ><small>Trofeos pendientes</small>
+            </article>
+            <article class="progressCard">
+              <div>
+                <span>TROFEOS CONSEGUIDOS</span><strong id="percent"></strong>
+              </div>
+              <progress id="progress" max="100" value="0"></progress
+              ><small>Porcentaje por cantidad de trofeos</small>
+            </article>
+          </div>
+          <div class="ownerStrip">
+            <div><span>ID LOCAL</span><code id="ownerUid"></code></div>
+            <div>
+              <span>ACCOUNT ID · HEX</span><code id="ownerAccount"></code>
+            </div>
+            <div>
+              <span>ACCOUNT ID · BASE64</span><code id="ownerBase64"></code>
+            </div>
+          </div>
+          <nav class="tabs">
+            <button class="selected" id="tabTrophies">
+              Trofeos <span id="trophyCount"></span></button
+            ><button id="tabFile">Datos del archivo</button
+            ><button class="exportReport" id="exportReport">
+              <svg><use href="#i-download" /></svg>Exportar detalle
+            </button>
+          </nav>
+          <section id="trophiesPanel">
+            <div class="tableToolbar">
+              <div class="searchbox">
+                <svg><use href="#i-search" /></svg
+                ><input
+                  id="search"
+                  placeholder="Buscar un trofeo…"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="filters">
+                <select id="stateFilter">
+                  <option value="all">Todos los estados</option>
+                  <option value="earned">Desbloqueados</option>
+                  <option value="locked">Pendientes</option></select
+                ><select id="gradeFilter">
+                  <option value="all">Todas las categorías</option>
+                  <option value="P">Platino</option>
+                  <option value="G">Oro</option>
+                  <option value="S">Plata</option>
+                  <option value="B">Bronce</option></select
+                ><select id="timezone">
+                  <option value="local">Hora local</option>
+                  <option value="utc">UTC</option>
+                </select>
+              </div>
+            </div>
+            <div class="tableScroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="number">ID</th>
+                    <th>TROFEO</th>
+                    <th>CATEGORÍA</th>
+                    <th>ESTADO</th>
+                    <th>DESBLOQUEADO</th>
+                  </tr>
+                </thead>
+                <tbody id="trophyRows"></tbody>
+              </table>
+              <div id="noResults" class="hidden emptyResults">
+                No hay trofeos que coincidan con la búsqueda.
+              </div>
+            </div>
+            <div class="tableFoot">
+              <span id="visibleCount"></span><span id="zoneLabel"></span>
+            </div>
+          </section>
+          <section id="filePanel" class="filePanel hidden"></section>
+        </section>
+      </section>
+      <footer>
+        <span>KIK Trophy · v1.0 <b>by kiikeep</b></span
+        ><span id="status">Listo para abrir tus respaldos</span>
+      </footer>
+    </main>
+    <div id="drawerBackdrop" class="backdrop hidden"></div>
+    <aside id="drawer" class="drawer hidden">
+      <div class="drawerTop">
+        <span class="eyebrow">CAMBIO DE PROPIETARIO</span
+        ><button id="closeDrawer" class="iconButton" title="Cerrar">×</button>
+      </div>
+      <h2>Change file owner</h2>
+      <p class="subtitle">
+        Los trofeos y sus fechas se conservan. Solo cambian los identificadores
+        y la comprobación del bloque afectado.
+      </p>
+      <div class="drawerGame">
+        <svg><use href="#i-trophy" /></svg>
+        <div>
+          <strong id="drawerTitle"></strong><span id="drawerSummary"></span>
+        </div>
+      </div>
+      <button id="loadIdentity" class="wide">
+        <svg><use href="#i-file" /></svg>Tomar IDs de otro TRPTITLE.DAT…
+      </button>
+      <div class="formDivider"><span>O ESCRÍBELOS AQUÍ</span></div>
+      <label for="targetUid">Nuevo ID local <span>8 caracteres hex</span></label
+      ><input
+        id="targetUid"
+        class="mono"
+        placeholder="Ej. 1234abcd"
+        autocomplete="off"
+        maxlength="8"
+      /><label for="targetAccount"
+        >Nuevo Account ID <span>Hex o Base64</span></label
+      ><input
+        id="targetAccount"
+        class="mono"
+        placeholder="16 caracteres hex o Base64"
+        autocomplete="off"
+        maxlength="24"
+      />
+      <p class="hint">
+        Deja un campo vacío para conservar su valor actual. Base64 usa el orden
+        de bytes compatible con tu Account ID.
+      </p>
+      <p class="hint" id="rememberHint">
+        Valid destination IDs are remembered on this PC.
+      </p>
+      <div id="changePreview" class="changePreview hidden"></div>
+      <div id="drawerError" class="warning hidden"></div>
+      <div class="drawerBottom">
+        <p>
+          <svg><use href="#i-shield" /></svg>Se genera un archivo nuevo. Tu
+          respaldo original permanece intacto.
+        </p>
+        <button id="exportDat" class="primary wide">
+          <svg><use href="#i-download" /></svg>Verificar y exportar DAT
+        </button>
+      </div>
+    </aside>
+    <div id="toast" class="toast hidden"></div>
+    <script src="languages.js"></script>
+    <script src="translations.js"></script>
+    <script src="i18n.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>

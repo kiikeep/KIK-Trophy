@@ -1,0 +1,13 @@
+{
+  "name": "kik-trophy-desktop",
+  "productName": "KIK Trophy",
+  "version": "1.0.0",
+  "description": "Inspector y editor de propietario de trofeos PS5",
+  "main": "main.cjs",
+  "author": "kiikeep",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node ../tests/core.test.cjs"
+  }
+}
