@@ -3,6 +3,52 @@
 (() => {
   const rows = [
     [
+      "Dates for shared trophies",
+      "Fechas de trofeos en ambas fuentes",
+      "Dates des trophées communs",
+      "Date dei trofei condivisi",
+      "両方で獲得済みのトロフィーの日時",
+      "Даты общих трофеев",
+      "双方已解锁奖杯的时间",
+    ],
+    [
+      "Keep local dates",
+      "Conservar fechas locales",
+      "Conserver les dates locales",
+      "Mantieni le date locali",
+      "ローカルの日時を保持",
+      "Сохранить локальные даты",
+      "保留本地时间",
+    ],
+    [
+      "Use PSN dates",
+      "Usar fechas de PSN",
+      "Utiliser les dates PSN",
+      "Usa le date PSN",
+      "PSN の日時を使用",
+      "Использовать даты PSN",
+      "使用 PSN 时间",
+    ],
+    [
+      "Dates updated",
+      "Fechas actualizadas",
+      "Dates modifiées",
+      "Date aggiornate",
+      "更新する日時",
+      "Обновлённые даты",
+      "已更新时间",
+    ],
+    [
+      "New trophies use their PSN date. Local-only trophies keep their local date.",
+      "Los trofeos nuevos usan su fecha de PSN. Los que solo existen localmente conservan su fecha local.",
+      "Les nouveaux trophées utilisent leur date PSN. Les trophées uniquement locaux conservent leur date locale.",
+      "I nuovi trofei usano la data PSN. I trofei solo locali mantengono la data locale.",
+      "新規トロフィーには PSN の日時を使用します。ローカルのみのトロフィーは元の日時を保持します。",
+      "Новые трофеи используют дату PSN. Трофеи только в локальной копии сохраняют свою дату.",
+      "新增奖杯使用 PSN 时间。仅本地解锁的奖杯保留本地时间。",
+    ],
+
+    [
       "A TRPTITLE.DAT for this game must already exist to merge. Launch the game at least once on your PS5, close it, then copy its DAT and matching TROPHY.UCP to your PC.",
       "Para hacer un merge debe existir un TRPTITLE.DAT de este juego. Abre el juego al menos una vez en tu PS5, ciérralo y copia su DAT y el TROPHY.UCP correspondiente a tu PC.",
       "Un TRPTITLE.DAT de ce jeu doit déjà exister pour la fusion. Lancez le jeu au moins une fois sur votre PS5, fermez-le, puis copiez son DAT et le TROPHY.UCP correspondant sur votre PC.",
@@ -168,13 +214,13 @@
       "合并到本地 DAT",
     ],
     [
-      "Local trophies and dates are kept. Only missing PSN unlocks are added.",
-      "Conserva los trofeos y fechas locales. Solo añade los desbloqueos de PSN que falten.",
-      "Les trophées et dates locaux sont conservés. Seuls les déblocages PSN manquants sont ajoutés.",
-      "Trofei e date locali restano invariati. Si aggiungono solo gli sblocchi PSN mancanti.",
-      "ローカルのトロフィーと日時を保持し、不足している PSN の獲得記録のみ追加します。",
-      "Локальные трофеи и даты сохраняются. Добавляются только недостающие разблокировки PSN.",
-      "保留本地奖杯和时间，仅添加缺少的 PSN 解锁记录。",
+      "Local unlocks are kept. Choose which date to use when both sources have the trophy.",
+      "Se conservan los desbloqueos locales. Elige qué fecha usar si el trofeo existe en ambas fuentes.",
+      "Les déblocages locaux sont conservés. Choisissez la date à utiliser si le trophée existe dans les deux sources.",
+      "Gli sblocchi locali vengono mantenuti. Scegli quale data usare se il trofeo è presente in entrambe le fonti.",
+      "ローカルの獲得記録を保持します。両方で獲得済みの場合に使用する日時を選んでください。",
+      "Локальные разблокировки сохраняются. Выберите дату для трофеев, полученных в обоих источниках.",
+      "保留本地解锁记录。请选择双方均已解锁奖杯使用的时间。",
     ],
     [
       "Local backup",
@@ -323,6 +369,11 @@
     ],
   ];
   const codes = {
+    "No PSN trophies or dates to update": [
+      "No PSN trophies or dates to update",
+      "No hay trofeos ni fechas de PSN para actualizar.",
+    ],
+
     PSN_SESSION_STORAGE_UNAVAILABLE: [
       "The session could not be saved securely on this computer. You can still use PSN for this session.",
       "No se pudo guardar la sesión de forma segura en este equipo. Puedes seguir usando PSN durante esta sesión.",

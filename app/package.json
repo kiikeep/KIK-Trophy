@@ -1,7 +1,7 @@
 {
   "name": "kik-trophy-desktop",
   "productName": "KIK Trophy",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "PS5 trophy backup inspector, owner transfer and experimental PSN merge",
   "main": "main.cjs",
   "author": "kiikeep",

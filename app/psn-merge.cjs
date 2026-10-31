@@ -48,7 +48,8 @@ function accountHex(id) {
   check(n > 0n && n <= 0xffffffffffffffffn, "Invalid PSN Account ID");
   return n.toString(16).padStart(16, "0");
 }
-function mergePsnDat(bytes, snapshot, catalog) {
+function mergePsnDat(bytes, snapshot, catalog, datePolicy = "local") {
+  check(["local", "psn"].includes(datePolicy), "Invalid merge date policy");
   const before = core.parseDat(bytes),
     d = Buffer.from(before.logical);
   check(
@@ -124,6 +125,8 @@ function mergePsnDat(bytes, snapshot, catalog) {
   const byId = new Map(),
     added = [],
     conflicts = [],
+    datesUpdated = [],
+    dateGroups = new Set(),
     localOnly = [],
     allowed = new Set(),
     groupLast = new Map();
@@ -168,10 +171,26 @@ function mergePsnDat(bytes, snapshot, catalog) {
       "The local DAT has inconsistent earned-trophy bitmaps",
     );
     if (old.earned) {
+      let ticks = BigInt(old.ticks);
       if (!t.earned) localOnly.push(old.id);
-      else if (BigInt(old.ticks) !== dateTicks(t.earnedDateTime))
-        conflicts.push(old.id);
-      const ticks = BigInt(old.ticks);
+      else if (ticks !== dateTicks(t.earnedDateTime)) {
+        if (datePolicy === "local") conflicts.push(old.id);
+        else {
+          ticks = dateTicks(t.earnedDateTime);
+          for (const off of [p + 32, p + 48]) {
+            d.writeBigUInt64BE(ticks, off);
+            for (let i = off; i < off + 8; i++) allowed.add(i);
+          }
+          dateGroups.add(group);
+          datesUpdated.push({
+            id: old.id,
+            name: meta.name,
+            localDateTime: old.unlockedAt,
+            psnDateTime: t.earnedDateTime,
+            group,
+          });
+        }
+      }
       if (ticks > last) last = ticks;
       if (ticks > (groupLast.get(group) || 0n)) groupLast.set(group, ticks);
       continue;
@@ -237,17 +256,20 @@ function mergePsnDat(bytes, snapshot, catalog) {
       }
     check(n > 0, "The platinum dependency map is missing");
   }
-  if (added.length) {
+  if (added.length || datesUpdated.length) {
     for (const off of [sp + 0x30, sp + 0x60]) {
       const existing = d.readBigUInt64BE(off);
-      if (last > existing) {
+      if ((datesUpdated.length && last !== existing) || last > existing) {
         d.writeBigUInt64BE(last, off);
         for (let i = off; i < off + 8; i++) allowed.add(i);
       }
     }
     for (const [id, ticks] of groupLast) {
       const off = groupMap.get(id).p + 0x10;
-      if (ticks > d.readBigUInt64BE(off)) {
+      if (
+        (dateGroups.has(id) && ticks !== d.readBigUInt64BE(off)) ||
+        ticks > d.readBigUInt64BE(off)
+      ) {
         d.writeBigUInt64BE(ticks, off);
         for (let i = off; i < off + 8; i++) allowed.add(i);
       }
@@ -280,11 +302,28 @@ function mergePsnDat(bytes, snapshot, catalog) {
   );
   for (const old of before.trophies) {
     const now = after.trophies[old.id];
-    if (old.earned)
+    if (old.earned) {
+      const replacement = datesUpdated.find((t) => t.id === old.id);
       check(
-        now.earned && now.ticks === old.ticks && now.flags === old.flags,
-        "An existing local trophy changed",
+        now.earned &&
+          now.ticks ===
+            (replacement
+              ? dateTicks(replacement.psnDateTime).toString()
+              : old.ticks) &&
+          now.flags === old.flags,
+        "An existing local trophy changed unexpectedly",
       );
+      const p = state.off + old.id * 96;
+      for (let off = 0; off < 96; off++)
+        if (
+          !replacement ||
+          !((off >= 32 && off < 40) || (off >= 48 && off < 56))
+        )
+          check(
+            d[p + off] === before.logical[p + off],
+            "A local trophy changed outside its timestamps",
+          );
+    }
     check(!old.earned || now.earned, "A local trophy was removed");
   }
   let changed = 0;
@@ -300,11 +339,16 @@ function mergePsnDat(bytes, snapshot, catalog) {
       psnAccountId: snapshot.account.accountId,
       snapshotDownloadedAt: snapshot.downloadedAt,
       added,
-      keptLocal: before.earned,
+      keptLocal: before.earned - datesUpdated.length,
+      datePolicy,
+      datesUpdated,
       localOnly,
       conflictsPreserved: conflicts,
       changedBlocks,
-      policy: "union-preserve-local-timestamps",
+      policy:
+        datePolicy === "local"
+          ? "union-preserve-local-timestamps"
+          : "union-prefer-psn-timestamps",
     },
   };
 }

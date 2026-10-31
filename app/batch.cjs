@@ -104,7 +104,12 @@ async function exportPrepared(items, parent) {
         total: x.after.total,
         trophyRecordsPreserved: !x.merge,
         ...(x.merge
-          ? { merge: x.merge, existingLocalTrophyRecordsPreserved: true }
+          ? {
+              merge: x.merge,
+              existingLocalTrophyRecordsPreserved:
+                !x.merge.datesUpdated?.length,
+              existingLocalUnlocksPreserved: true,
+            }
           : {}),
       });
     }
@@ -113,7 +118,7 @@ async function exportPrepared(items, parent) {
       JSON.stringify(
         {
           app: "KIK Trophy Desktop",
-          version: "1.2",
+          version: "1.3",
           exportedAt: new Date().toISOString(),
           count: items.length,
           files: report,

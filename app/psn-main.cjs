@@ -37,16 +37,16 @@ function installPsnHandlers({
     snapshots.set(key, { value, source });
     return { key, ...value };
   }
-  function prepare(key, snapshotKey) {
+  function prepare(key, snapshotKey, datePolicy) {
     const r = record(key),
       s = snapshot(snapshotKey),
       catalog = catalogs.get(r.dat.npwr + ":" + r.dat.catalogHash)?.ucp.en;
-    const result = mergePsnDat(r.bytes, s.value, catalog);
+    const result = mergePsnDat(r.bytes, s.value, catalog, datePolicy);
     result.merge.source = s.source;
     return { record: r, result };
   }
-  function preview(key, snapshotKey) {
-    const { record: r, result: x } = prepare(key, snapshotKey);
+  function preview(key, snapshotKey, datePolicy) {
+    const { record: r, result: x } = prepare(key, snapshotKey, datePolicy);
     return {
       npwr: r.dat.npwr,
       uid: x.after.uid,
@@ -118,10 +118,13 @@ function installPsnHandlers({
       return d.filePath;
     },
     "psn-merge-preview": preview,
-    "psn-merge-export": async (key, snapshotKey) => {
-      const item = prepare(key, snapshotKey);
-      if (!item.result.merge.added.length)
-        throw Error("No new PSN trophies to add");
+    "psn-merge-export": async (key, snapshotKey, datePolicy) => {
+      const item = prepare(key, snapshotKey, datePolicy);
+      if (
+        !item.result.merge.added.length &&
+        !item.result.merge.datesUpdated.length
+      )
+        throw Error("No PSN trophies or dates to update");
       const d = await dialog.showOpenDialog(win(), {
         title: "Choose a folder for the merged DAT",
         properties: ["openDirectory"],

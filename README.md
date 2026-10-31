@@ -1,4 +1,4 @@
-# KIK Trophy 1.2
+# KIK Trophy 1.3
 
 **Move your PS5 trophy progress to another local user while preserving unlocked trophies and their original timestamps.**
 
@@ -108,7 +108,7 @@ Owner transfers tested with **Ratchet & Clank: Rift Apart** and **ASTRO BOT**. P
 
 Created by **kiikeep** · [MIT License](LICENSE)
 
-## Download and merge from PSN (1.2)
+## Download and merge from PSN (1.3)
 
 **PSN online** downloads the trophy progress already synced to your Sony account. You can inspect it, save a PSN JSON backup, and add missing unlocks to a local PS5 `TRPTITLE.DAT`. This does not upload trophies to PSN.
 
@@ -118,7 +118,7 @@ Created by **kiikeep** · [MIT License](LICENSE)
 4. Select a **Local backup** and click **Preview merge**. The PSN Account ID must match the DAT owner. If necessary, use **Change owner**, export the DAT, and reopen that exported copy first. The local user ID remains the one in your selected DAT.
 5. Review the added trophies and destination path, then **Export merged DAT (experimental)**. It creates a fresh folder and report; source files remain unchanged.
 
-Merging keeps every existing local unlock and its local timestamp, including when PSN has a different date. It adds only PSN-earned trophies that are locked locally, using their PSN dates. It requires the same PS5 trophy set and catalog version. PS3/PS4 progress can be downloaded and inspected, but cannot be merged into a PS5 DAT.
+Merging keeps every existing local unlock. **Dates for shared trophies** lets you choose **Keep local dates** (default) or **Use PSN dates** for trophies earned in both sources. New PSN unlocks use their PSN date; local-only trophies keep their local date. Preview lists any date replacements, and you can export date-only changes even if there are no new trophies. It requires the same PS5 trophy set and catalog version. PS3/PS4 progress can be downloaded and inspected, but cannot be merged into a PS5 DAT.
 
 **A DAT for that game must already exist before merging. Launch the game at least once on your PS5, close it, then copy its DAT and matching TROPHY.UCP to your PC.**
 
@@ -132,3 +132,7 @@ For source builds and validation details, see [DEVELOPMENT.md](DEVELOPMENT.md).
 - **Disconnect** forgets the saved session. Closing the app preserves it.
 - A visible warning explains that the game must be launched at least once to generate its DAT before merging.
 - The PSN panel uses **PSN** throughout.
+
+## What changed in 1.3
+
+Choose whether shared unlocked trophies keep their local dates or use their PSN dates. The preview and report list date replacements; date-only exports are supported.

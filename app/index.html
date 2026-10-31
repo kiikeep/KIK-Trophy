@@ -268,7 +268,7 @@
         </section>
       </section>
       <footer>
-        <span>KIK Trophy · v1.2 <b>by kiikeep</b></span
+        <span>KIK Trophy · v1.3 <b>by kiikeep</b></span
         ><span id="status">Listo para abrir tus respaldos</span>
       </footer>
     </main>
@@ -414,11 +414,27 @@
             <h3 data-psn-text="Combine with local DAT"></h3>
             <p
               class="psnHint"
-              data-psn-text="Local trophies and dates are kept. Only missing PSN unlocks are added."
+              data-psn-text="Local unlocks are kept. Choose which date to use when both sources have the trophy."
             ></p>
             <p
               class="psnHint"
               data-psn-text="Load the DAT and matching TROPHY.UCP in the main window first. The DAT must belong to the same PSN account."
+            ></p>
+            <label
+              for="psnDatePolicy"
+              data-psn-text="Dates for shared trophies"
+            ></label>
+            <select id="psnDatePolicy">
+              <option value="local" data-psn-text="Keep local dates">
+                Keep local dates
+              </option>
+              <option value="psn" data-psn-text="Use PSN dates">
+                Use PSN dates
+              </option>
+            </select>
+            <p
+              class="psnHint"
+              data-psn-text="New trophies use their PSN date. Local-only trophies keep their local date."
             ></p>
             <label for="psnLocal" data-psn-text="Local backup"></label
             ><select id="psnLocal"></select

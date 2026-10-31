@@ -9,10 +9,10 @@ contextBridge.exposeInMainWorld("kik", {
   psnDownload: (key) => ipcRenderer.invoke("psn-download", key),
   psnImport: () => ipcRenderer.invoke("psn-import"),
   psnSave: (key) => ipcRenderer.invoke("psn-save", key),
-  psnMergePreview: (key, snapshot) =>
-    ipcRenderer.invoke("psn-merge-preview", key, snapshot),
-  psnMergeExport: (key, snapshot) =>
-    ipcRenderer.invoke("psn-merge-export", key, snapshot),
+  psnMergePreview: (key, snapshot, datePolicy) =>
+    ipcRenderer.invoke("psn-merge-preview", key, snapshot, datePolicy),
+  psnMergeExport: (key, snapshot, datePolicy) =>
+    ipcRenderer.invoke("psn-merge-export", key, snapshot, datePolicy),
   psnOpenAuth: (kind) => ipcRenderer.invoke("psn-open-auth", kind),
   onPsnProgress: (callback) => {
     const handler = (_e, data) => callback(data);

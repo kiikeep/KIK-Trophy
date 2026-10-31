@@ -49,7 +49,10 @@
     $("psnRefresh").disabled = running || !state.connected;
     $("psnSave").disabled = running || !snapshot;
     $("psnCompare").disabled = running || !snapshot || !$("psnLocal").value;
-    $("psnExport").disabled = running || !plan || !plan.added.length;
+    $("psnLocal").disabled = running;
+    $("psnDatePolicy").disabled = running;
+    $("psnExport").disabled =
+      running || !plan || !(plan.added.length || plan.datesUpdated?.length);
   }
   function bypass(id, disabled) {
     $(id).disabled = disabled;
@@ -292,7 +295,7 @@
       node(
         "p",
         null,
-        `${L("Different dates kept local")}: ${result.conflictsPreserved.length}`,
+        `${L("Different dates kept local")}: ${result.conflictsPreserved.length} · ${L("Dates updated")}: ${result.datesUpdated?.length || 0}`,
       ),
       node(
         "code",
@@ -310,6 +313,14 @@
       list.append(
         node("div", null, `${t.id} · ${t.name} · ${t.earnedDateTime}`),
       );
+    for (const t of result.datesUpdated || [])
+      list.append(
+        node(
+          "div",
+          null,
+          `${t.id} · ${t.name} · ${t.localDateTime} → ${t.psnDateTime}`,
+        ),
+      );
     box.append(list);
     box.classList.remove("hidden");
   }
@@ -318,6 +329,7 @@
       plan = await window.kik.psnMergePreview(
         $("psnLocal").value,
         snapshot.key,
+        $("psnDatePolicy").value,
       );
       renderPlan();
     });
@@ -326,11 +338,13 @@
       const result = await window.kik.psnMergeExport(
         $("psnLocal").value,
         snapshot.key,
+        $("psnDatePolicy").value,
       );
       if (result) message(L("Merged DAT exported") + "\n" + result.path);
     });
   $("psnSearch").oninput = renderTitles;
   $("psnLocal").onchange = clearPlan;
+  $("psnDatePolicy").onchange = clearPlan;
   window.kik.onPsnProgress?.((p) => {
     $("psnProgress").textContent =
       p.phase === "session"

@@ -33,11 +33,13 @@ Opening the PSN panel automatically restores a saved session through a fresh OAu
 
 ## Merge policy and limits
 
-Union with local history preserved: never remove a local earned trophy or replace its record/date. For a missing earned trophy, copy the locally defined target progress value and use PSN's unlock timestamp. Require matching Account ID, NPWR, PS5 platform, catalog hash/version, complete trophy IDs, grades and group membership. Unknown layouts or unsupported unlock comparators are rejected. Owner transfer remains a separate operation.
+Union with local unlocks preserved: never remove a local earned trophy. In 1.3, the default `local` date policy preserves existing earned records byte for byte. The optional `psn` policy replaces only both unlock-timestamp fields of shared earned trophies whose PSN date differs, preserving their flags, progress values and every other record byte. Latest-unlock summaries are recomputed for date changes, including earlier replacement dates; local-only trophies retain their dates. For a missing earned trophy, copy the locally defined target progress value and use PSN's unlock timestamp. Require matching Account ID, NPWR, PS5 platform, catalog hash/version, complete trophy IDs, grades and group membership. Unknown layouts or unsupported unlock comparators are rejected. Owner transfer remains a separate operation.
 
 Supported native layout: T2PD/T2TD v1, 1024-byte payload blocks plus SHA-256, fixed sections `0x400/500/600/700/800`. New earned records update both timestamp fields, earned flags and typed u32/u64 target values, global earned/touched bitmaps, per-group earned bitmaps and latest-unlock timestamps. Unknown bytes remain unchanged. Platinum merging also requires every dependency in its local definition to be earned; its flags are inferred and remain experimental. Checksums and the parsed result are verified before export.
 
-Exports include `batch.kik-report.json` with added trophies, preserved date conflicts, local-only unlocks, changed blocks, download time, source type, `experimental: true` and `consoleRestoreVerified: false`. A repeated merge with the same snapshot changes no bytes.
+Exports include `batch.kik-report.json` with added trophies, the selected date policy, preserved date conflicts, replaced dates with old/new values, local-only unlocks, changed blocks, download time, source type, `experimental: true` and `consoleRestoreVerified: false`. A repeated merge with the same snapshot and date policy changes no bytes. Date-only changes can be exported without adding a trophy.
+
+`psn-dates.test.cjs` covers both policies, earlier/later global and DLC-group summaries, mirrored timestamps, unchanged non-date bytes, local-only/new trophies, idempotence and real IPC date-only export/report checks. The UI suite checks policy forwarding, preview invalidation and date-only export in the same seven-language interface.
 
 ## What is verified
 
