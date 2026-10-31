@@ -17,7 +17,8 @@ const assert = require("node:assert/strict"),
     assert.equal(after.earned, 64);
     assert.equal(r.merge.added.length, 62);
     assert.deepEqual(r.merge.conflictsPreserved, [1, 32]);
-    assert.equal(r.merge.experimental, true);
+    assert.equal(r.merge.experimental, false);
+    assert.equal(r.merge.consoleRestoreTested, true);
     assert.equal(r.merge.consoleRestoreVerified, false);
     assert.deepEqual(source, f.bytes);
     assert.equal(after.accountHex, before.accountHex);

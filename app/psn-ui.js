@@ -302,11 +302,6 @@
         "restorePath",
         "\\" + result.relativePath.replaceAll("/", "\\"),
       ),
-      node(
-        "p",
-        "psnExperimental",
-        L("Experimental DAT export: console restoration still needs testing."),
-      ),
     );
     const list = node("div", "psnChanges");
     for (const t of result.added)

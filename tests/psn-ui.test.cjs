@@ -179,6 +179,11 @@ const assert = require("node:assert/strict"),
     assert.equal(await page.locator("#psnTrophyRows tr").count(), 4);
     await page.click("#psnCompare");
     await page.waitForSelector("#psnPlan:not(.hidden)");
+    assert.equal(await page.locator(".psnExperimental").count(), 0);
+    assert.equal(
+      (await page.locator("#psnExport").textContent()).includes("experimental"),
+      false,
+    );
     assert.match(await page.locator("#psnPlan").textContent(), /1 → 3/);
     assert.match(
       await page.locator("#psnPlan code").textContent(),

@@ -332,7 +332,8 @@ function mergePsnDat(bytes, snapshot, catalog, datePolicy = "local") {
     after,
     changed,
     merge: {
-      experimental: true,
+      experimental: false,
+      consoleRestoreTested: true,
       consoleRestoreVerified: false,
       psnAccountId: snapshot.account.accountId,
       snapshotDownloadedAt: snapshot.downloadedAt,
