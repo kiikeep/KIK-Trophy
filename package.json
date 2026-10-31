@@ -1,13 +1,14 @@
 {
   "name": "kik-trophy-desktop-source",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "KIK Trophy desktop development workspace",
   "scripts": {
     "start": "npm run build:psn && electron app",
-    "test": "npm run build:psn && node tests/core.test.cjs && node tests/preferences.test.cjs && node tests/locales.test.cjs && node tests/batch.test.cjs && node tests/main.test.cjs && node tests/psn.test.cjs && node tests/psn-main.test.cjs",
+    "test": "npm run build:psn && node tests/core.test.cjs && node tests/preferences.test.cjs && node tests/locales.test.cjs && node tests/batch.test.cjs && node tests/main.test.cjs && node tests/psn.test.cjs && node tests/psn-main.test.cjs && node tests/psn-session.test.cjs",
     "test:ui": "node tests/ui.test.cjs && node tests/psn-ui.test.cjs",
-    "package:win": "npm run build:psn && electron-packager app KIK-Trophy --electron-version=44.7.2 --platform=win32 --arch=x64 --out=dist --overwrite --icon=app/icon.ico --executable-name=\"KIK Trophy\" --app-version=1.1.0 --build-version=1.1.0 --win32metadata.CompanyName=kiikeep --win32metadata.ProductName=\"KIK Trophy\" && node rebrand.mjs dist/KIK-Trophy-win32-x64",
-    "build:psn": "node scripts/build-psn.cjs"
+    "package:win": "npm run build:psn && electron-packager app KIK-Trophy --electron-version=44.7.2 --platform=win32 --arch=x64 --out=dist --overwrite --icon=app/icon.ico --executable-name=\"KIK Trophy\" --app-version=1.2.0 --build-version=1.2.0 --win32metadata.CompanyName=kiikeep --win32metadata.ProductName=\"KIK Trophy\" && node rebrand.mjs dist/KIK-Trophy-win32-x64",
+    "build:psn": "node scripts/build-psn.cjs",
+    "test:session:win": "electron tests/psn-encryption.test.cjs"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",

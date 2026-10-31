@@ -8,13 +8,17 @@ function createPsnClient({
   now = () => Date.now(),
   onProgress = () => {},
   timeoutMs,
+  sessionStore,
 } = {}) {
   let tokens = null,
     profile = null,
     titles = new Map(),
     busy = false,
     epoch = 0,
-    controller = null;
+    controller = null,
+    operationEpoch = 0,
+    sessionRemembered = false,
+    sessionWarning = null;
   function library() {
     if (!api) api = require("./vendor/psn-api.cjs");
     return api;
@@ -23,6 +27,7 @@ function createPsnClient({
     if (busy) throw new PsnError("PSN_BUSY");
     busy = true;
     const current = epoch;
+    operationEpoch = current;
     controller = new AbortController();
     try {
       return await withPsnHttp(
@@ -38,6 +43,12 @@ function createPsnClient({
         tokens = null;
         profile = null;
         titles.clear();
+        sessionRemembered = false;
+        try {
+          await sessionStore?.clear();
+        } catch {
+          sessionWarning = "PSN_SESSION_SAVE_FAILED";
+        }
       }
       if (e instanceof PsnError) throw e;
       throw new PsnError("PSN_REQUEST_FAILED");
@@ -67,12 +78,72 @@ function createPsnClient({
       expiresAt: now() + t.expiresIn * 1000,
     };
   }
+  function checkSession() {
+    if (operationEpoch !== epoch) throw new PsnError("PSN_CANCELLED");
+  }
+  async function rememberTokens() {
+    checkSession();
+    if (!sessionStore || !tokens) return;
+    try {
+      await sessionStore.save({ refreshToken: tokens.refreshToken });
+      checkSession();
+      sessionRemembered = true;
+      sessionWarning = null;
+    } catch (e) {
+      if (e.code === "PSN_CANCELLED") throw e;
+      sessionRemembered = false;
+      sessionWarning =
+        e.code === "PSN_SESSION_STORAGE_UNAVAILABLE"
+          ? e.code
+          : "PSN_SESSION_SAVE_FAILED";
+    }
+    checkSession();
+  }
+  async function readProfile() {
+    const summary = await library().getUserTrophyProfileSummary(
+      await authorization(),
+      "me",
+    );
+    accountHex(summary.accountId);
+    let onlineId = "";
+    try {
+      const p = await library().getProfileFromAccountId(
+        await authorization(),
+        summary.accountId,
+      );
+      onlineId = p?.profile?.onlineId || p?.onlineId || "";
+    } catch (e) {
+      if (
+        ["PSN_CANCELLED", "PSN_TIMEOUT", "PSN_SESSION_EXPIRED"].includes(e.code)
+      )
+        throw e;
+    }
+    profile = {
+      accountId: summary.accountId,
+      accountHex: accountHex(summary.accountId),
+      onlineId: typeof onlineId === "string" ? onlineId.slice(0, 64) : "",
+      level: summary.trophyLevel,
+      earnedTrophies: Object.fromEntries(
+        ["platinum", "gold", "silver", "bronze"].map((k) => [
+          k,
+          Number.isSafeInteger(summary.earnedTrophies?.[k])
+            ? summary.earnedTrophies[k]
+            : 0,
+        ]),
+      ),
+    };
+    checkSession();
+  }
   async function authorization() {
     if (!tokens) throw new PsnError("PSN_NOT_CONNECTED");
-    if (tokens.expiresAt < now() + 60000)
-      tokens = validateTokens(
-        await library().exchangeRefreshTokenForAuthTokens(tokens.refreshToken),
+    if (tokens.expiresAt < now() + 60000) {
+      const renewed = await library().exchangeRefreshTokenForAuthTokens(
+        tokens.refreshToken,
       );
+      checkSession();
+      tokens = validateTokens(renewed);
+      await rememberTokens();
+    }
     return { accessToken: tokens.accessToken };
   }
   async function pageAll(fn, field, options = {}) {
@@ -139,16 +210,47 @@ function createPsnClient({
     state() {
       return {
         connected: !!tokens,
+        sessionRemembered,
+        sessionWarning,
         profile: profile ? structuredClone(profile) : null,
         titles: [...titles.values()].map((t) => ({ ...t })),
       };
     },
-    disconnect() {
+    async disconnect({ forget = true } = {}) {
       epoch++;
       controller?.abort();
       tokens = null;
       profile = null;
       titles.clear();
+      sessionRemembered = false;
+      sessionWarning = null;
+      if (forget) {
+        try {
+          await sessionStore?.clear();
+        } catch {
+          sessionWarning = "PSN_SESSION_SAVE_FAILED";
+        }
+      }
+    },
+    async shutdown() {
+      await this.disconnect({ forget: false });
+      await sessionStore?.flush();
+    },
+    restore() {
+      return exclusive(async () => {
+        const saved = await sessionStore?.load();
+        checkSession();
+        if (!saved) return this.state();
+        onProgress({ phase: "session", count: 0 });
+        const renewed = await library().exchangeRefreshTokenForAuthTokens(
+          saved.refreshToken,
+        );
+        checkSession();
+        tokens = validateTokens(renewed);
+        await rememberTokens();
+        await readProfile();
+        return this.state();
+      });
     },
     connect(npsso) {
       return exclusive(async () => {
@@ -157,45 +259,15 @@ function createPsnClient({
         tokens = null;
         profile = null;
         titles.clear();
+        sessionRemembered = false;
+        sessionWarning = null;
         try {
           const code = await library().exchangeNpssoForAccessCode(npsso);
           tokens = validateTokens(
             await library().exchangeAccessCodeForAuthTokens(code),
           );
-          const summary = await library().getUserTrophyProfileSummary(
-            await authorization(),
-            "me",
-          );
-          accountHex(summary.accountId);
-          let onlineId = "";
-          try {
-            const p = await library().getProfileFromAccountId(
-              await authorization(),
-              summary.accountId,
-            );
-            onlineId = p?.profile?.onlineId || p?.onlineId || "";
-          } catch (e) {
-            if (
-              ["PSN_CANCELLED", "PSN_TIMEOUT", "PSN_SESSION_EXPIRED"].includes(
-                e.code,
-              )
-            )
-              throw e;
-          }
-          profile = {
-            accountId: summary.accountId,
-            accountHex: accountHex(summary.accountId),
-            onlineId: typeof onlineId === "string" ? onlineId.slice(0, 64) : "",
-            level: summary.trophyLevel,
-            earnedTrophies: Object.fromEntries(
-              ["platinum", "gold", "silver", "bronze"].map((k) => [
-                k,
-                Number.isSafeInteger(summary.earnedTrophies?.[k])
-                  ? summary.earnedTrophies[k]
-                  : 0,
-              ]),
-            ),
-          };
+          await readProfile();
+          await rememberTokens();
           return this.state();
         } catch (e) {
           tokens = null;

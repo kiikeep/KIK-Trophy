@@ -268,7 +268,7 @@
         </section>
       </section>
       <footer>
-        <span>KIK Trophy · v1.1 <b>by kiikeep</b></span
+        <span>KIK Trophy · v1.2 <b>by kiikeep</b></span
         ><span id="status">Listo para abrir tus respaldos</span>
       </footer>
     </main>
@@ -332,7 +332,7 @@
     <dialog id="psnPanel" class="psnPanel">
       <div class="psnTop">
         <div>
-          <span class="eyebrow">PLAYSTATION NETWORK</span>
+          <span class="eyebrow">PSN</span>
           <h2 data-psn-text="PSN trophies">PSN trophies</h2>
         </div>
         <button id="psnClose" class="iconButton" aria-label="Close">×</button>
@@ -343,7 +343,7 @@
       ></p>
       <section id="psnCredentials" class="psnCredentials">
         <p
-          data-psn-text="Sign in on Sony's website, get your NPSSO, and paste it here. It stays in memory for this session."
+          data-psn-text="Sign in on Sony's website, get your NPSSO, and paste it here. Your session is saved securely on this computer. Disconnect to forget it."
         ></p>
         <div class="psnAuthLinks">
           <button id="psnLoginLink" data-psn-text="1. Sony sign-in"></button
@@ -372,6 +372,12 @@
         <button id="psnDisconnect" data-psn-text="Disconnect"></button>
       </section>
       <div id="psnError" class="warning hidden" role="alert"></div>
+      <p id="psnSessionNotice" class="psnHint hidden" role="status"></p>
+      <p
+        id="psnDatRequirement"
+        class="psnRequirement"
+        data-psn-text="A TRPTITLE.DAT for this game must already exist to merge. Launch the game at least once on your PS5, close it, then copy its DAT and matching TROPHY.UCP to your PC."
+      ></p>
       <div class="psnGrid">
         <section class="psnLibrary">
           <div class="psnToolbar">

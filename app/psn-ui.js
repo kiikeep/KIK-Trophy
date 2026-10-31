@@ -73,6 +73,14 @@
     const p = state.profile;
     $("psnCredentials").classList.toggle("hidden", state.connected);
     $("psnProfile").classList.toggle("hidden", !state.connected);
+    const notice = $("psnSessionNotice");
+    notice.classList.toggle(
+      "hidden",
+      !state.sessionWarning && !(state.connected && state.sessionRemembered),
+    );
+    notice.textContent = state.sessionWarning
+      ? L(state.sessionWarning)
+      : L("Session saved on this computer. Disconnect to forget it.");
     if (!p) return;
     const counts = p.earnedTrophies || {};
     $("psnProfileName").textContent = p.onlineId || p.accountHex;
@@ -189,14 +197,21 @@
     localOptions();
     updateLabels();
     controls();
-    try {
-      state = await window.kik.psnState();
-      renderProfile();
-      renderTitles();
-      controls();
-    } catch (e) {
-      message(errorMessage(e), true);
-    }
+    await task(async () => {
+      $("psnProgress").textContent = L("Restoring saved session…");
+      try {
+        state = await window.kik.psnState();
+        renderProfile();
+        renderTitles();
+        if (state.connected && !state.titles.length) {
+          state = await window.kik.psnTitles();
+          renderProfile();
+          renderTitles();
+        }
+      } finally {
+        $("psnProgress").textContent = "";
+      }
+    });
   };
   $("psnClose").onclick = () => {
     $("psnNpsso").value = "";
@@ -317,7 +332,10 @@
   $("psnSearch").oninput = renderTitles;
   $("psnLocal").onchange = clearPlan;
   window.kik.onPsnProgress?.((p) => {
-    $("psnProgress").textContent = L("Downloading") + " · " + p.count;
+    $("psnProgress").textContent =
+      p.phase === "session"
+        ? L("Restoring saved session…")
+        : L("Downloading") + " · " + p.count;
   });
   window.addEventListener("kik-languagechange", updateLabels);
   updateLabels();

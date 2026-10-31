@@ -18,13 +18,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm run test:session:win
       - run: npx playwright install chromium
       - run: npm run test:ui
       - run: npm run package:win
       - name: Archive portable app
         shell: pwsh
-        run: Compress-Archive -Path dist/KIK-Trophy-win32-x64 -DestinationPath KIK-Trophy-v1.1-Windows-x64.zip
+        run: Compress-Archive -Path dist/KIK-Trophy-win32-x64 -DestinationPath KIK-Trophy-v1.2-Windows-x64.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: KIK-Trophy-v1.1-Windows-x64
-          path: KIK-Trophy-v1.1-Windows-x64.zip
+          name: KIK-Trophy-v1.2-Windows-x64
+          path: KIK-Trophy-v1.2-Windows-x64.zip

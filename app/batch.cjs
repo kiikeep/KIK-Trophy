@@ -113,7 +113,7 @@ async function exportPrepared(items, parent) {
       JSON.stringify(
         {
           app: "KIK Trophy Desktop",
-          version: "1.1",
+          version: "1.2",
           exportedAt: new Date().toISOString(),
           count: items.length,
           files: report,

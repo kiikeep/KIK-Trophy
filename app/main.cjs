@@ -6,6 +6,7 @@ const {
   dialog,
   shell,
   session,
+  safeStorage,
 } = require("electron");
 const fs = require("node:fs/promises"),
   path = require("node:path");
@@ -227,11 +228,15 @@ app.whenReady().then(() => {
     catalogs,
     fileBytes,
     shell,
+    sessionStore: require("./psn-session.cjs").createSessionStore({
+      directory: () => app.getPath("userData"),
+      safeStorage,
+    }),
   });
   win.loadFile(HTML);
 });
 app.on("window-all-closed", async () => {
-  psnHandlers?.close();
+  await psnHandlers?.close();
   await identityStore.flush();
   app.quit();
 });

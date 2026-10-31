@@ -3,6 +3,33 @@
 (() => {
   const rows = [
     [
+      "A TRPTITLE.DAT for this game must already exist to merge. Launch the game at least once on your PS5, close it, then copy its DAT and matching TROPHY.UCP to your PC.",
+      "Para hacer un merge debe existir un TRPTITLE.DAT de este juego. Abre el juego al menos una vez en tu PS5, ciérralo y copia su DAT y el TROPHY.UCP correspondiente a tu PC.",
+      "Un TRPTITLE.DAT de ce jeu doit déjà exister pour la fusion. Lancez le jeu au moins une fois sur votre PS5, fermez-le, puis copiez son DAT et le TROPHY.UCP correspondant sur votre PC.",
+      "Per unire i trofei deve già esistere un TRPTITLE.DAT di questo gioco. Avvia il gioco almeno una volta su PS5, chiudilo e copia il DAT e il TROPHY.UCP corrispondente sul PC.",
+      "統合するには、このゲームの TRPTITLE.DAT が必要です。PS5 でゲームを一度以上起動して終了し、DAT と対応する TROPHY.UCP を PC にコピーしてください。",
+      "Для объединения нужен TRPTITLE.DAT этой игры. Запустите игру хотя бы один раз на PS5, закройте её и скопируйте DAT и соответствующий TROPHY.UCP на ПК.",
+      "合并前必须已有该游戏的 TRPTITLE.DAT。请在 PS5 上至少启动一次游戏，关闭游戏后将 DAT 和对应的 TROPHY.UCP 复制到电脑。",
+    ],
+    [
+      "Session saved on this computer. Disconnect to forget it.",
+      "Sesión guardada en este equipo. Desconecta para borrarla.",
+      "Session enregistrée sur cet ordinateur. Déconnectez-vous pour l’effacer.",
+      "Sessione salvata su questo computer. Disconnettiti per eliminarla.",
+      "セッションをこの PC に保存しました。切断すると削除されます。",
+      "Сеанс сохранён на этом компьютере. Отключитесь, чтобы удалить его.",
+      "会话已保存在此计算机上。断开连接即可删除。",
+    ],
+    [
+      "Restoring saved session…",
+      "Recuperando sesión guardada…",
+      "Restauration de la session…",
+      "Ripristino della sessione…",
+      "保存したセッションを復元中…",
+      "Восстановление сеанса…",
+      "正在恢复已保存的会话…",
+    ],
+    [
       "Load the DAT and matching TROPHY.UCP in the main window first. The DAT must belong to the same PSN account.",
       "Abre primero el DAT y su TROPHY.UCP en la ventana principal. El DAT debe pertenecer a la misma cuenta de PSN.",
       "Ouvrez d’abord le DAT et son TROPHY.UCP dans la fenêtre principale. Le DAT doit appartenir au même compte PSN.",
@@ -48,13 +75,13 @@
       "下载已获得的奖杯并合并到本地备份。",
     ],
     [
-      "Sign in on Sony's website, get your NPSSO, and paste it here. It stays in memory for this session.",
-      "Inicia sesión en la web de Sony, obtén tu NPSSO y pégalo aquí. Solo se conserva en memoria durante esta sesión.",
-      "Connectez-vous au site Sony, obtenez votre NPSSO et collez-le ici. Il reste en mémoire pour cette session.",
-      "Accedi al sito Sony, ottieni il tuo NPSSO e incollalo qui. Rimane in memoria solo per questa sessione.",
-      "Sony のサイトでログインし、NPSSO を取得して貼り付けてください。このセッションのメモリにのみ保持します。",
-      "Войдите на сайте Sony, получите NPSSO и вставьте его здесь. Он хранится только в памяти текущего сеанса.",
-      "登录 Sony 网站，获取 NPSSO 并粘贴到此处。仅在当前会话内存中保留。",
+      "Sign in on Sony's website, get your NPSSO, and paste it here. Your session is saved securely on this computer. Disconnect to forget it.",
+      "Inicia sesión en la web de Sony, obtén tu NPSSO y pégalo aquí. Tu sesión se guarda de forma segura en este equipo. Desconecta para borrarla.",
+      "Connectez-vous au site Sony, obtenez votre NPSSO et collez-le ici. Votre session est enregistrée de façon sécurisée sur cet ordinateur. Déconnectez-vous pour l’effacer.",
+      "Accedi al sito Sony, ottieni il tuo NPSSO e incollalo qui. La sessione viene salvata in modo sicuro su questo computer. Disconnettiti per eliminarla.",
+      "Sony のサイトでログインし、NPSSO を取得して貼り付けてください。セッションはこの PC に安全に保存されます。切断すると削除されます。",
+      "Войдите на сайте Sony, получите NPSSO и вставьте его здесь. Сеанс безопасно сохраняется на этом компьютере. Отключитесь, чтобы удалить его.",
+      "登录 Sony 网站，获取 NPSSO 并粘贴到此处。会话将安全保存在此计算机上，断开连接即可删除。",
     ],
     [
       "1. Sony sign-in",
@@ -296,6 +323,18 @@
     ],
   ];
   const codes = {
+    PSN_SESSION_STORAGE_UNAVAILABLE: [
+      "The session could not be saved securely on this computer. You can still use PSN for this session.",
+      "No se pudo guardar la sesión de forma segura en este equipo. Puedes seguir usando PSN durante esta sesión.",
+    ],
+    PSN_SESSION_SAVE_FAILED: [
+      "The PSN session could not be saved. You may need to sign in again next time.",
+      "No se pudo guardar la sesión de PSN. Puede que debas iniciar sesión de nuevo la próxima vez.",
+    ],
+    PSN_SESSION_LOAD_FAILED: [
+      "The saved session could not be recovered. Connect again with your NPSSO.",
+      "No se pudo recuperar la sesión guardada. Conecta de nuevo con tu NPSSO.",
+    ],
     "The PSN Account ID and DAT owner differ. Use Change owner first or select the correct DAT":
       [
         "The PSN Account ID and DAT owner differ. Use Change owner first or select the correct DAT",

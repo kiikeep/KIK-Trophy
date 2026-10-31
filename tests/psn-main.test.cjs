@@ -19,8 +19,16 @@ const assert = require("node:assert/strict"),
     let chosen = dir,
       cancel = false,
       disconnected = false,
+      restored = 0,
+      closed = false,
       opened = "";
     const fake = {
+      restore: async () => {
+        restored++;
+      },
+      shutdown: async () => {
+        closed = true;
+      },
       state: () => ({ connected: true, profile: {}, titles: [] }),
       connect: async () => fake.state(),
       disconnect: () => {
@@ -57,6 +65,9 @@ const assert = require("node:assert/strict"),
       () => call("psn-merge-preview", "local", "missing"),
       /PSN backup/,
     );
+    await call("psn-state");
+    await call("psn-state");
+    assert.equal(restored, 1);
     const snapshot = await call("psn-download", "game");
     assert(snapshot.key);
     const plan = call("psn-merge-preview", "local", snapshot.key);
@@ -97,7 +108,8 @@ const assert = require("node:assert/strict"),
       () => call("psn-merge-preview", "local", snapshot.key),
       /PSN backup/,
     );
-    api.close();
+    await api.close();
+    assert(closed);
     console.log(
       "PASS: PSN IPC sender checks, preview, native cancellation, export tree/report, preserved originals, JSON save/import, overwrite refusal, exact Sony links and disconnect cleanup",
     );

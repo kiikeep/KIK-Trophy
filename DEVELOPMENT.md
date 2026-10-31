@@ -7,16 +7,19 @@ npm ci
 npm test
 npx playwright install chromium
 npm run test:ui
+# Windows only: verify real DPAPI across Electron processes
+npm run test:session:win
 npm start
 npm run package:win
 ```
 
 `build:psn` bundles the pinned MIT-licensed `psn-api` dependency into `app/vendor/psn-api.cjs`. Both startup and packaging run it automatically. The app needs no Node.js installation on the end user's PC. `app/vendor` and `node_modules` are generated, not committed. Include the whole packaged Windows directory, including `resources/app/vendor` and the third-party license.
 
-The pull-request workflow tests the modules and UI, packages the Windows runtime and uploads a ZIP artifact. A draft PR is a preview, not a released or console-verified build.
+The pull-request workflow tests the modules and UI, packages the Windows runtime and uploads a ZIP artifact. A draft PR is not a released or console-verified build.
 
 ## PSN modules
 
+- `psn-session.cjs`: serialized, atomic encrypted refresh-token storage using Electron safeStorage (Windows DPAPI). Refuses unencrypted fallback backends.
 - `psn-client.cjs`: session lifetime, refresh, pagination and downloaded snapshots. Uses `me` for the authenticated user's trophies.
 - `psn-http.cjs`: bounded network reads, cancellation, timeouts and fixed errors. Permits GET requests to the Sony API hosts and POST only to Sony's OAuth token endpoint. Redirects are not followed automatically.
 - `psn-backup.cjs`: validates and normalizes credential-free JSON snapshots. Imported JSON is user-supplied data, not a signed Sony response; the merge report distinguishes it from a download in an authenticated session.
@@ -24,7 +27,9 @@ The pull-request workflow tests the modules and UI, packages the Windows runtime
 - `psn-main.cjs`: validates IPC senders, holds snapshots in RAM, handles native file dialogs and fresh-folder exports.
 - `psn-ui.js` / `psn-i18n.js`: PSN panel in the existing seven interface languages. Authentication uses an external browser and a password field, not an embedded Sony login.
 
-NPSSO, access tokens and refresh tokens are not saved in preferences, backup JSON, reports or logs. Disconnect clears the session and snapshots and aborts in-flight network calls. Closing the PSN panel clears the input but deliberately keeps an active session until Disconnect or application exit.
+NPSSO and access tokens are kept only in memory. Only the refresh token is saved, encrypted through Electron safeStorage, in `psn-session.bin` under the existing app user-data directory. No credentials are included in preferences, backup JSON, reports or logs. Windows DPAPI ties recovery to the OS user. `basic_text` and unavailable encryption are refused; PSN remains usable in memory with a visible save warning. Writes are serialized, fsynced and atomically replaced, including token rotation.
+
+Opening the PSN panel automatically restores a saved session through a fresh OAuth token exchange and reloads the profile and games. Closing the panel clears the NPSSO field. Closing the app aborts requests and clears RAM while preserving the encrypted session. Disconnect explicitly deletes it and clears snapshots. Cancelled operations cannot recreate a forgotten session. Expired/revoked sessions are removed; transient network errors retain the saved refresh token for retry. Damaged or undecryptable files produce a reconnect message without exposing decrypted content.
 
 ## Merge policy and limits
 
@@ -42,4 +47,6 @@ Exports include `batch.kik-report.json` with added trophies, preserved date conf
 
 Private offline backups were also checked during development: 16 added Ratchet records and 9 added ASTRO BOT records exactly matched known-good earned records, including mirrored timestamps and typed values. These private game files are not distributed or used by CI. This validates byte handling, not Sony connectivity or console restoration.
 
-**Pending:** live authentication/download with a real Sony session and restoration of a merged DAT on PS5. Do not describe these as passed until performed. Sony may change these unofficial API endpoints or restrict access. The original owner-transfer tests do not validate this new progress writer.
+`psn-session.test.cjs` additionally tests encrypted refresh-only persistence, app-client recreation, token rotation, logout, shutdown, corrupt/wrong-key data, unavailable crypto, offline retry and cancellation/write races. `test:session:win` runs real Electron safeStorage/DPAPI on Windows, then launches a fresh Electron process to decrypt the saved session. UI tests cover remembered-session recovery, explicit forgetting and the localized DAT prerequisite.
+
+The user confirmed that live PSN connection and trophy reading work in 1.1. **Pending:** a real-account restart test of 1.2 session persistence and restoration of a merged DAT on PS5. Sony may change these unofficial API endpoints or restrict access. The original owner-transfer tests do not validate this new progress writer.

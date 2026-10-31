@@ -52,12 +52,18 @@ async function psnFetch(input, init = {}) {
     if (response.status >= 400) {
       await response.body?.cancel();
       throw new PsnError(
-        {
-          401: "PSN_SESSION_EXPIRED",
-          403: "PSN_PRIVATE",
-          404: "PSN_NOT_FOUND",
-          429: "PSN_RATE_LIMIT",
-        }[response.status] || "PSN_REQUEST_FAILED",
+        (response.status === 400 &&
+        url.hostname === "ca.account.sony.com" &&
+        url.pathname === "/api/authz/v3/oauth/token"
+          ? "PSN_AUTH_FAILED"
+          : null) ||
+          {
+            401: "PSN_SESSION_EXPIRED",
+            403: "PSN_PRIVATE",
+            404: "PSN_NOT_FOUND",
+            429: "PSN_RATE_LIMIT",
+          }[response.status] ||
+          "PSN_REQUEST_FAILED",
       );
     }
     if (response.status >= 300) return response;

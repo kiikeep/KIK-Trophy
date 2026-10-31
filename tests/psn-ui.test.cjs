@@ -32,7 +32,7 @@ const assert = require("node:assert/strict"),
     page.on("pageerror", (e) => errors.push(e.message));
     await page.addInitScript(
       ({ local, snapshot, preview }) => {
-        let connected = false;
+        let connected = sessionStorage.getItem("test-psn-session") === "yes";
         const title = {
           key: "game",
           name: "Synthetic game",
@@ -42,6 +42,7 @@ const assert = require("node:assert/strict"),
         };
         const state = () => ({
           connected,
+          sessionRemembered: connected,
           profile: connected
             ? {
                 onlineId: "synthetic",
@@ -65,10 +66,12 @@ const assert = require("node:assert/strict"),
             window.testNpsso = value;
             if (value.length !== 64) throw Error("PSN_INVALID_NPSSO");
             connected = true;
+            sessionStorage.setItem("test-psn-session", "yes");
             return state();
           },
           psnDisconnect: async () => {
             connected = false;
+            sessionStorage.removeItem("test-psn-session");
             return state();
           },
           psnTitles: async () => state(),
@@ -106,6 +109,31 @@ const assert = require("node:assert/strict"),
       ),
       false,
     );
+    assert.match(
+      await page.locator("#psnSessionNotice").textContent(),
+      /Session saved/,
+    );
+    await page.reload();
+    await page.click("#openPsn");
+    await page.waitForSelector("#psnProfile:not(.hidden)");
+    await page.waitForSelector("#psnTitles button");
+    assert(await page.locator("#psnCredentials").isHidden());
+    assert.match(
+      await page.locator("#psnDatRequirement").textContent(),
+      /Launch the game at least once/,
+    );
+    assert.equal(
+      await page.locator("#psnPanel").getByText("PSN", { exact: true }).count(),
+      1,
+    );
+    assert(
+      !(await page.locator("#psnPanel").textContent()).includes(
+        "PLAYSTATION NETWORK",
+      ),
+    );
+    await page.locator("#psnClose").click();
+    await page.click("#openFolder");
+    await page.locator("#openPsn").click();
     await page.click("#psnTitles button");
     await page.waitForSelector("#psnSnapshot:not(.hidden)");
     assert.equal(await page.locator("#psnTrophyRows tr").count(), 4);
@@ -129,22 +157,34 @@ const assert = require("node:assert/strict"),
           await page.locator("#psnCompare").textContent(),
           "Preview merge",
         );
+      const warning = await page.locator("#psnDatRequirement").textContent();
+      assert(warning.includes("TRPTITLE.DAT"));
+      if (lang !== "en") assert(!warning.includes("Launch the game"));
       const overflow = await page
         .locator("#psnPanel")
         .evaluate((el) => el.scrollWidth > el.clientWidth + 1);
       assert.equal(overflow, false, lang + " panel overflow");
     }
-    await page.screenshot({ path: "/tmp/kik-psn-preview.png" });
+    await page.screenshot({
+      path: path.join(require("node:os").tmpdir(), "kik-psn-preview.png"),
+    });
     await page.click("#psnDisconnect");
     assert(await page.locator("#psnCredentials").isVisible());
     assert(await page.locator("#psnExport").isDisabled());
+    await page.click("#psnClose");
+    await page.reload();
+    await page.click("#openPsn");
+    assert(await page.locator("#psnCredentials").isVisible());
+    await page.click("#psnClose");
+    await page.click("#openFolder");
+    await page.click("#openPsn");
     await page.click("#psnImport");
     await page.waitForSelector("#psnSnapshot:not(.hidden)");
     await page.click("#psnCompare");
     assert(await page.locator("#psnExport").isEnabled());
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: PSN login input clearing, error recovery, games/downloads, merge preview/export, offline JSON import, disconnect, seven UI languages and 1100×760 layout",
+      "PASS: PSN remembered session after reload, disconnect forgetting, DAT warning, login input clearing, error recovery, games/downloads, merge preview/export, offline JSON import, disconnect, seven UI languages and 1100×760 layout",
     );
   } finally {
     await browser.close();

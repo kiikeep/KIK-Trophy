@@ -16,3 +16,6 @@ preferences.json
 
 app/vendor/
 *.psn-backup.json
+
+psn-session.bin
+.kik-psn-*/

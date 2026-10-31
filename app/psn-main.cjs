@@ -16,9 +16,13 @@ function installPsnHandlers({
   fileBytes,
   shell,
   clientFactory = createPsnClient,
+  sessionStore,
 }) {
   const snapshots = new Map();
+  let sessionChecked = false,
+    restoring = null;
   const client = clientFactory({
+    sessionStore,
     onProgress: (p) => win()?.webContents.send?.("psn-progress", p),
   });
   function snapshot(key) {
@@ -57,13 +61,29 @@ function installPsnHandlers({
     };
   }
   const handlers = {
-    "psn-state": () => client.state(),
+    "psn-state": async () => {
+      if (!sessionChecked && client.restore) {
+        if (!restoring)
+          restoring = client
+            .restore()
+            .then(() => {
+              sessionChecked = true;
+            })
+            .finally(() => {
+              restoring = null;
+            });
+        await restoring;
+      }
+      return client.state();
+    },
     "psn-connect": async (npsso) => {
+      sessionChecked = true;
       snapshots.clear();
       return client.connect(npsso);
     },
-    "psn-disconnect": () => {
-      client.disconnect();
+    "psn-disconnect": async () => {
+      sessionChecked = true;
+      await client.disconnect();
       snapshots.clear();
       return client.state();
     },
@@ -134,8 +154,9 @@ function installPsnHandlers({
       return fn(...args);
     });
   return {
-    close: () => {
-      client.disconnect();
+    close: async () => {
+      if (client.shutdown) await client.shutdown();
+      else await client.disconnect();
       snapshots.clear();
     },
   };
