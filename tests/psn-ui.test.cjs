@@ -148,6 +148,20 @@ const assert = require("node:assert/strict"),
       await page.locator("#psnDatRequirement").textContent(),
       /Launch the game at least once/,
     );
+    const instructionStyle = await page
+      .locator("#psnDatRequirement")
+      .evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          color: s.color,
+          border: s.borderTopWidth,
+          background: s.backgroundColor,
+          text: getComputedStyle(document.body).color,
+        };
+      });
+    assert.equal(instructionStyle.color, instructionStyle.text);
+    assert.equal(instructionStyle.border, "0px");
+    assert.equal(instructionStyle.background, "rgba(0, 0, 0, 0)");
     assert.equal(
       await page.locator("#psnPanel").getByText("PSN", { exact: true }).count(),
       1,

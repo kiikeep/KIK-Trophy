@@ -75,10 +75,8 @@ function mergePsnDat(bytes, snapshot, catalog, datePolicy = "local") {
       catalog.hash === before.catalogHash,
     "Add the matching TROPHY.UCP before merging",
   );
-  check(
-    version(catalog.version) === version(snapshot.title.trophySetVersion),
-    "The PSN and local catalogs have different versions",
-  );
+  // Catalog releases and PSN can express versions differently (e.g. 1.4 / 01.40).
+  // Compatibility is checked below against the local definitions, not version text.
   check(
     Array.isArray(snapshot.trophies) &&
       snapshot.trophies.length === before.total &&
@@ -338,6 +336,10 @@ function mergePsnDat(bytes, snapshot, catalog, datePolicy = "local") {
       consoleRestoreVerified: false,
       psnAccountId: snapshot.account.accountId,
       snapshotDownloadedAt: snapshot.downloadedAt,
+      catalogVersions: {
+        local: catalog.version,
+        psn: snapshot.title.trophySetVersion,
+      },
       added,
       keptLocal: before.earned - datesUpdated.length,
       datePolicy,

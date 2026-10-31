@@ -67,7 +67,35 @@ const assert = require("node:assert/strict"),
   reject((s) => (s.account.accountId = "123"), /owner differ/);
   reject((s) => (s.title.npCommunicationId = "NPWR99999_00"), /does not match/);
   reject((s) => (s.title.platform = "PS4"), /PS5/);
-  reject((s) => (s.title.trophySetVersion = "2.0"), /versions/);
+  for (const remoteVersion of ["01.40", "2.0"]) {
+    const snapshot = structuredClone(f.snapshot);
+    snapshot.title.trophySetVersion = remoteVersion;
+    const localCatalog = { ...f.catalog, version: "1.4" };
+    const result = mergePsnDat(f.bytes, snapshot, localCatalog);
+    assert.equal(result.after.earned, 3);
+    assert.deepEqual(result.merge.catalogVersions, {
+      local: "1.4",
+      psn: remoteVersion,
+    });
+    const wrongCount = structuredClone(snapshot);
+    wrongCount.trophies.pop();
+    assert.throws(
+      () => mergePsnDat(f.bytes, wrongCount, localCatalog),
+      /counts/,
+    );
+    const wrongGrade = structuredClone(snapshot);
+    wrongGrade.trophies[2].grade = "G";
+    assert.throws(
+      () => mergePsnDat(f.bytes, wrongGrade, localCatalog),
+      /grades/,
+    );
+    const wrongId = structuredClone(snapshot);
+    wrongId.trophies[2].id = 1;
+    assert.throws(
+      () => mergePsnDat(f.bytes, wrongId, localCatalog),
+      /duplicate/,
+    );
+  }
   reject((s) => s.trophies.pop(), /counts/);
   reject((s) => (s.trophies[2].id = 1), /duplicate/);
   reject((s) => (s.trophies[2].grade = "G"), /grades/);

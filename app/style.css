@@ -1573,11 +1573,7 @@ header > div:first-child {
 }
 
 .psnRequirement {
-  padding: 12px 16px;
-  border: 1px solid #675537;
-  background: #332b1d;
-  border-radius: 10px;
-  color: #f2d38d;
+  color: var(--text);
   font-size: 12px;
   line-height: 1.7;
   margin: 14px 0;

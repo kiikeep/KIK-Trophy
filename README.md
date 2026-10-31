@@ -1,4 +1,4 @@
-# KIK Trophy 1.3
+# KIK Trophy 1.3.1
 
 **Move your PS5 trophy progress to another local user while preserving unlocked trophies and their original timestamps.**
 
@@ -118,7 +118,7 @@ Created by **kiikeep** · [MIT License](LICENSE)
 4. Select a **Local backup** and click **Preview merge**. The PSN Account ID must match the DAT owner. If necessary, use **Change owner**, export the DAT, and reopen that exported copy first. The local user ID remains the one in your selected DAT.
 5. Review the added trophies and destination path, then **Export merged DAT (experimental)**. It creates a fresh folder and report; source files remain unchanged.
 
-Merging keeps every existing local unlock. **Dates for shared trophies** lets you choose **Keep local dates** (default) or **Use PSN dates** for trophies earned in both sources. New PSN unlocks use their PSN date; local-only trophies keep their local date. Preview lists any date replacements, and you can export date-only changes even if there are no new trophies. It requires the same PS5 trophy set and catalog version. PS3/PS4 progress can be downloaded and inspected, but cannot be merged into a PS5 DAT.
+Merging keeps every existing local unlock. **Dates for shared trophies** lets you choose **Keep local dates** (default) or **Use PSN dates** for trophies earned in both sources. New PSN unlocks use their PSN date; local-only trophies keep their local date. Preview lists any date replacements, and you can export date-only changes even if there are no new trophies. It requires the same PS5 trophy set and matching trophy IDs, count and grades. Version numbers alone do not block a merge; both version strings are recorded in the export report. PS3/PS4 progress can be downloaded and inspected, but cannot be merged into a PS5 DAT.
 
 **A DAT for that game must already exist before merging. Launch the game at least once on your PS5, close it, then copy its DAT and matching TROPHY.UCP to your PC.**
 
@@ -136,3 +136,7 @@ For source builds and validation details, see [DEVELOPMENT.md](DEVELOPMENT.md).
 ## What changed in 1.3
 
 Choose whether shared unlocked trophies keep their local dates or use their PSN dates. The preview and report list date replacements; date-only exports are supported.
+
+## What changed in 1.3.1
+
+Catalog version differences no longer block a structurally compatible merge (including differently formatted versions such as `1.4` and `01.40`). Matching NPWR, Account ID, local catalog hash, trophy count, IDs, grades, groups and supported native layouts are still required. The DAT prerequisite is displayed as ordinary instructional text.

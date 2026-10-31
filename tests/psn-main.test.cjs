@@ -68,10 +68,13 @@ const assert = require("node:assert/strict"),
     await call("psn-state");
     await call("psn-state");
     assert.equal(restored, 1);
+    f.catalog.version = "1.4";
+    f.snapshot.title.trophySetVersion = "01.40";
     const snapshot = await call("psn-download", "game");
     assert(snapshot.key);
     const plan = call("psn-merge-preview", "local", snapshot.key);
     assert.equal(plan.added.length, 2);
+    assert.deepEqual(plan.catalogVersions, { local: "1.4", psn: "01.40" });
     assert.equal(
       plan.relativePath,
       "user/home/11223344/trophy2/nobackup/data/NPWR00001_00/TRPTITLE.DAT",
@@ -87,6 +90,10 @@ const assert = require("node:assert/strict"),
     assert.equal(report.files[0].existingLocalTrophyRecordsPreserved, true);
     assert.equal(report.files[0].merge.source, "authenticated-psn-session");
     assert.equal(report.files[0].merge.consoleRestoreVerified, false);
+    assert.deepEqual(report.files[0].merge.catalogVersions, {
+      local: "1.4",
+      psn: "01.40",
+    });
     const saved = await call("psn-save", snapshot.key);
     assert.equal(
       JSON.parse(await fs.readFile(saved)).schema,
