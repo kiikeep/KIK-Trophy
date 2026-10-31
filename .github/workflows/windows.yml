@@ -34,6 +34,8 @@ jobs:
           if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
           $windows = "KIK-Trophy-v${version}-Windows-x64.zip"
           $source = "KIK-Trophy-v${version}-Source.zip"
+          Copy-Item LICENSE dist/KIK-Trophy-win32-x64/LICENSE.KIK-Trophy.txt
+          Copy-Item README.md, README.es.md, DEVELOPMENT.md, RELEASE_NOTES.md dist/KIK-Trophy-win32-x64/
           Compress-Archive -Path dist/KIK-Trophy-win32-x64 -DestinationPath $windows
           git archive --format=zip --prefix="KIK-Trophy-v${version}-Source/" --output=$source HEAD
           if ($LASTEXITCODE -ne 0) { throw 'Source archive failed' }
