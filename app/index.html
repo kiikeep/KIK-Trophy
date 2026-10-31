@@ -63,6 +63,7 @@
           >
             <span id="languageFlag"></span
             ><span id="languageCode">EN</span></button
+          ><button id="openPsn" data-psn-text="PSN online">PSN online</button
           ><span class="offline"><i></i> Todo en tu PC</span
           ><button id="openFolder">
             <svg><use href="#i-folder" /></svg>Abrir carpeta</button
@@ -267,7 +268,7 @@
         </section>
       </section>
       <footer>
-        <span>KIK Trophy · v1.0 <b>by kiikeep</b></span
+        <span>KIK Trophy · v1.1 <b>by kiikeep</b></span
         ><span id="status">Listo para abrir tus respaldos</span>
       </footer>
     </main>
@@ -327,10 +328,111 @@
         </button>
       </div>
     </aside>
+
+    <dialog id="psnPanel" class="psnPanel">
+      <div class="psnTop">
+        <div>
+          <span class="eyebrow">PLAYSTATION NETWORK</span>
+          <h2 data-psn-text="PSN trophies">PSN trophies</h2>
+        </div>
+        <button id="psnClose" class="iconButton" aria-label="Close">×</button>
+      </div>
+      <p
+        class="subtitle"
+        data-psn-text="Download earned trophies and combine them with a local backup."
+      ></p>
+      <section id="psnCredentials" class="psnCredentials">
+        <p
+          data-psn-text="Sign in on Sony's website, get your NPSSO, and paste it here. It stays in memory for this session."
+        ></p>
+        <div class="psnAuthLinks">
+          <button id="psnLoginLink" data-psn-text="1. Sony sign-in"></button
+          ><button id="psnTokenLink" data-psn-text="2. Get NPSSO"></button>
+        </div>
+        <label for="psnNpsso">NPSSO</label
+        ><input
+          type="password"
+          id="psnNpsso"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="512"
+          placeholder="NPSSO / JSON"
+        /><button
+          id="psnConnect"
+          class="primary"
+          data-psn-text="Connect"
+        ></button>
+      </section>
+      <section id="psnProfile" class="psnProfile hidden">
+        <div>
+          <strong id="psnProfileName"></strong>
+          <p id="psnProfileCounts"></p>
+          <code id="psnProfileId"></code>
+        </div>
+        <button id="psnDisconnect" data-psn-text="Disconnect"></button>
+      </section>
+      <div id="psnError" class="warning hidden" role="alert"></div>
+      <div class="psnGrid">
+        <section class="psnLibrary">
+          <div class="psnToolbar">
+            <strong
+              ><span data-psn-text="Games"></span>
+              <span id="psnTitleCount">0</span></strong
+            ><button id="psnRefresh" data-psn-text="Load games"></button>
+          </div>
+          <input id="psnSearch" type="search" aria-label="Search games" />
+          <p id="psnProgress" class="psnHint" role="status"></p>
+          <button id="psnImport" data-psn-text="Open PSN JSON"></button>
+          <div id="psnTitles"></div>
+        </section>
+        <section>
+          <div id="psnSnapshot" class="hidden">
+            <h3 id="psnSnapshotTitle"></h3>
+            <p id="psnSnapshotMeta" class="psnHint"></p>
+            <button id="psnSave" data-psn-text="Save PSN JSON"></button>
+            <div class="psnTable">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th data-psn-text="Trophy"></th>
+                    <th data-psn-text="Status"></th>
+                    <th data-psn-text="Unlocked at"></th>
+                  </tr>
+                </thead>
+                <tbody id="psnTrophyRows"></tbody>
+              </table>
+            </div>
+          </div>
+          <section class="psnMerge">
+            <h3 data-psn-text="Combine with local DAT"></h3>
+            <p
+              class="psnHint"
+              data-psn-text="Local trophies and dates are kept. Only missing PSN unlocks are added."
+            ></p>
+            <p
+              class="psnHint"
+              data-psn-text="Load the DAT and matching TROPHY.UCP in the main window first. The DAT must belong to the same PSN account."
+            ></p>
+            <label for="psnLocal" data-psn-text="Local backup"></label
+            ><select id="psnLocal"></select
+            ><button id="psnCompare" data-psn-text="Preview merge"></button>
+            <div id="psnPlan" class="changePreview hidden"></div>
+            <button
+              id="psnExport"
+              class="primary wide"
+              data-psn-text="Export merged DAT (experimental)"
+            ></button>
+          </section>
+        </section>
+      </div>
+    </dialog>
     <div id="toast" class="toast hidden"></div>
     <script src="languages.js"></script>
     <script src="translations.js"></script>
     <script src="i18n.js"></script>
     <script src="renderer.js"></script>
+    <script src="psn-i18n.js"></script>
+    <script src="psn-ui.js"></script>
   </body>
 </html>

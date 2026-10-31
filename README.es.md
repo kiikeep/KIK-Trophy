@@ -1,4 +1,4 @@
-# KIK Trophy 1.0
+# KIK Trophy 1.1 preview
 
 **Transfiere tu progreso de trofeos de PS5 a otro usuario local, conservando los desbloqueos y sus fechas originales.**
 
@@ -102,6 +102,22 @@ Conserva el nombre `TRPTITLE.DAT` y comprueba que coincidan el usuario y el iden
 
 ---
 
-Probado con **Ratchet & Clank: Rift Apart** y **ASTRO BOT**. La herramienta transfiere progreso existente; no desbloquea trofeos nuevos ni sincroniza con PSN.
+Cambio de propietario probado con **Ratchet & Clank: Rift Apart** y **ASTRO BOT**. La descarga de PSN y el merge experimental se explican a continuación.
 
 Creado por **kiikeep** · [Licencia MIT](LICENSE)
+
+## Descargar y combinar desde PSN (preview 1.1)
+
+**PSN en línea** descarga el progreso que ya está sincronizado con tu cuenta de Sony. Permite consultarlo, guardarlo como JSON y añadir desbloqueos faltantes a un `TRPTITLE.DAT` local de PS5. No sube trofeos a PSN.
+
+1. Abre tu carpeta o ZIP local, incluyendo el `TRPTITLE.DAT` y su catálogo `TROPHY.UCP` correspondiente.
+2. Abre **PSN en línea** y pulsa **1. Iniciar sesión en Sony**. Inicia sesión en tu navegador. **2. Obtener NPSSO** abre el endpoint de sesión de Sony: pega su valor NPSSO o su JSON en la aplicación y pulsa **Conectar**. Los tokens solo quedan en memoria y se borran al desconectar o cerrar la aplicación.
+3. Busca el juego y pulsa **Descargar**. **Guardar JSON de PSN** crea un respaldo del progreso sin credenciales; **Abrir JSON de PSN** permite usar una descarga guardada sin conexión.
+4. Selecciona un **Backup local** y pulsa **Vista previa del merge**. El Account ID de PSN debe coincidir con el propietario del DAT. Si hace falta, usa **Change owner**, exporta y vuelve a abrir ese DAT primero. Se conserva el ID local del DAT seleccionado.
+5. Revisa los trofeos añadidos y la ruta de destino, y pulsa **Exportar DAT combinado (experimental)**. Se crea una carpeta nueva con un reporte; los originales permanecen intactos.
+
+El merge conserva todos los desbloqueos locales y sus fechas, incluso si PSN registra otra fecha. Solo añade trofeos desbloqueados en PSN que estén bloqueados localmente, con sus fechas de PSN. Requiere el mismo conjunto de trofeos de PS5 y la misma versión del catálogo. Puedes descargar y consultar PS3/PS4, pero no combinarlos con un DAT de PS5.
+
+**La escritura de progreso es experimental: todavía no se ha probado su restauración en consola.** La función original de cambio de propietario se probó por separado. Conserva tu DAT original y prepara el juego y su catálogo como se explica arriba antes de probar un merge exportado.
+
+Instrucciones para compilar y detalles de validación: [DEVELOPMENT.md](DEVELOPMENT.md).

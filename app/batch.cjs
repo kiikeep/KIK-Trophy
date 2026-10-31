@@ -102,7 +102,10 @@ async function exportPrepared(items, parent) {
         verifiedBlocks: x.after.blocks,
         earned: x.after.earned,
         total: x.after.total,
-        trophyRecordsPreserved: true,
+        trophyRecordsPreserved: !x.merge,
+        ...(x.merge
+          ? { merge: x.merge, existingLocalTrophyRecordsPreserved: true }
+          : {}),
       });
     }
     await fs.writeFile(
@@ -110,7 +113,7 @@ async function exportPrepared(items, parent) {
       JSON.stringify(
         {
           app: "KIK Trophy Desktop",
-          version: "1.0",
+          version: "1.1",
           exportedAt: new Date().toISOString(),
           count: items.length,
           files: report,

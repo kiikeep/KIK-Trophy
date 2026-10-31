@@ -13,3 +13,6 @@ release/
 Thumbs.db
 preferences.json
 .kik-prefs-*/
+
+app/vendor/
+*.psn-backup.json

@@ -1,8 +1,8 @@
 {
   "name": "kik-trophy-desktop",
   "productName": "KIK Trophy",
-  "version": "1.0.0",
-  "description": "Inspector y editor de propietario de trofeos PS5",
+  "version": "1.1.0",
+  "description": "PS5 trophy backup inspector, owner transfer and experimental PSN merge",
   "main": "main.cjs",
   "author": "kiikeep",
   "license": "MIT",

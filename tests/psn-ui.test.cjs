@@ -1,0 +1,155 @@
+"use strict";
+const assert = require("node:assert/strict"),
+  { chromium } = require("playwright"),
+  path = require("node:path"),
+  { pathToFileURL } = require("node:url"),
+  core = require("../app/core.cjs"),
+  { progressFixture } = require("./psn-fixtures.cjs"),
+  { mergePsnDat } = require("../app/psn-merge.cjs");
+(async () => {
+  const f = progressFixture(),
+    d = core.parseDat(f.bytes),
+    local = { key: "local", ...core.publicDat(d, f.catalog) },
+    snapshot = { key: "snapshot", ...f.snapshot },
+    merge = mergePsnDat(f.bytes, f.snapshot, f.catalog),
+    preview = {
+      before: 1,
+      after: 3,
+      total: 4,
+      relativePath:
+        "user/home/11223344/trophy2/nobackup/data/NPWR00001_00/TRPTITLE.DAT",
+      ...merge.merge,
+    };
+  const browser = await chromium.launch({
+    executablePath: process.env.KIK_CHROME_PATH || undefined,
+    args: ["--no-sandbox"],
+  });
+  try {
+    const page = await browser.newPage({
+        viewport: { width: 1100, height: 760 },
+      }),
+      errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.addInitScript(
+      ({ local, snapshot, preview }) => {
+        let connected = false;
+        const title = {
+          key: "game",
+          name: "Synthetic game",
+          npCommunicationId: "NPWR00001_00",
+          platform: "PS5",
+          progress: 75,
+        };
+        const state = () => ({
+          connected,
+          profile: connected
+            ? {
+                onlineId: "synthetic",
+                accountHex: "1020304050607080",
+                level: 12,
+                earnedTrophies: { bronze: 3 },
+              }
+            : null,
+          titles: connected ? [title] : [],
+        });
+        window.kik = {
+          lastIdentity: async () => null,
+          setLanguage: async () => [local],
+          importFiles: async () => ({
+            records: [local],
+            errors: [],
+            warnings: [],
+          }),
+          psnState: async () => state(),
+          psnConnect: async (value) => {
+            window.testNpsso = value;
+            if (value.length !== 64) throw Error("PSN_INVALID_NPSSO");
+            connected = true;
+            return state();
+          },
+          psnDisconnect: async () => {
+            connected = false;
+            return state();
+          },
+          psnTitles: async () => state(),
+          psnDownload: async () => snapshot,
+          psnImport: async () => snapshot,
+          psnSave: async () => "/synthetic/NPWR00001_00.psn-backup.json",
+          psnMergePreview: async () => preview,
+          psnMergeExport: async () => {
+            window.testExported = true;
+            return { path: "/synthetic/" + preview.relativePath };
+          },
+          psnOpenAuth: async () => true,
+          onPsnProgress: () => {},
+        };
+      },
+      { local, snapshot, preview },
+    );
+    await page.goto(pathToFileURL(path.resolve("app/index.html")).href);
+    await page.click("#openFolder");
+    await page.click("#openPsn");
+    assert(await page.locator("#psnPanel").isVisible());
+    assert(await page.locator("#psnExport").isDisabled());
+    await page.fill("#psnNpsso", "bad");
+    await page.click("#psnConnect");
+    await page.waitForSelector("#psnError:not(.hidden)");
+    assert.match(await page.locator("#psnError").textContent(), /64-character/);
+    assert.equal(await page.locator("#psnNpsso").inputValue(), "");
+    await page.fill("#psnNpsso", JSON.stringify({ npsso: "a".repeat(64) }));
+    await page.click("#psnConnect");
+    await page.waitForSelector("#psnTitles button");
+    assert.equal(await page.locator("#psnNpsso").inputValue(), "");
+    assert.equal(
+      await page.evaluate(() =>
+        JSON.stringify(localStorage).includes("a".repeat(64)),
+      ),
+      false,
+    );
+    await page.click("#psnTitles button");
+    await page.waitForSelector("#psnSnapshot:not(.hidden)");
+    assert.equal(await page.locator("#psnTrophyRows tr").count(), 4);
+    await page.click("#psnCompare");
+    await page.waitForSelector("#psnPlan:not(.hidden)");
+    assert.match(await page.locator("#psnPlan").textContent(), /1 → 3/);
+    assert.match(
+      await page.locator("#psnPlan code").textContent(),
+      /user\\home\\11223344/,
+    );
+    await page.click("#psnExport");
+    await page.waitForFunction(() => window.testExported === true);
+    for (const lang of ["en", "es", "fr", "it", "ja", "ru", "zh-CN"]) {
+      await page.evaluate((lang) => {
+        window.I18N.lang = lang;
+        window.dispatchEvent(new Event("kik-languagechange"));
+      }, lang);
+      assert(await page.locator("#psnConnect").textContent());
+      if (lang !== "en")
+        assert.notEqual(
+          await page.locator("#psnCompare").textContent(),
+          "Preview merge",
+        );
+      const overflow = await page
+        .locator("#psnPanel")
+        .evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+      assert.equal(overflow, false, lang + " panel overflow");
+    }
+    await page.screenshot({ path: "/tmp/kik-psn-preview.png" });
+    await page.click("#psnDisconnect");
+    assert(await page.locator("#psnCredentials").isVisible());
+    assert(await page.locator("#psnExport").isDisabled());
+    await page.click("#psnImport");
+    await page.waitForSelector("#psnSnapshot:not(.hidden)");
+    await page.click("#psnCompare");
+    assert(await page.locator("#psnExport").isEnabled());
+    assert.deepEqual(errors, []);
+    console.log(
+      "PASS: PSN login input clearing, error recovery, games/downloads, merge preview/export, offline JSON import, disconnect, seven UI languages and 1100×760 layout",
+    );
+  } finally {
+    await browser.close();
+  }
+})().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

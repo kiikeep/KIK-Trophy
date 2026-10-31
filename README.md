@@ -1,4 +1,4 @@
-# KIK Trophy 1.0
+# KIK Trophy 1.1 preview
 
 **Move your PS5 trophy progress to another local user while preserving unlocked trophies and their original timestamps.**
 
@@ -104,6 +104,22 @@ Keep the filename `TRPTITLE.DAT` and check the user and game identifiers. The ex
 
 ---
 
-Tested with **Ratchet & Clank: Rift Apart** and **ASTRO BOT**. The tool transfers existing progress; it does not unlock new trophies or sync with PSN.
+Owner transfers tested with **Ratchet & Clank: Rift Apart** and **ASTRO BOT**. PSN downloading and experimental progress merging are described below.
 
 Created by **kiikeep** · [MIT License](LICENSE)
+
+## Download and merge from PSN (1.1 preview)
+
+**PSN online** downloads the trophy progress already synced to your Sony account. You can inspect it, save a PSN JSON backup, and add missing unlocks to a local PS5 `TRPTITLE.DAT`. This does not upload trophies to PSN.
+
+1. Open your local backup folder or ZIP, including its `TRPTITLE.DAT` and matching `TROPHY.UCP` catalog.
+2. Click **PSN online**, then **1. Sony sign-in**. Sign in using your own browser. **2. Get NPSSO** opens Sony's session endpoint; paste its NPSSO value or JSON into the app and click **Connect**. Your session tokens stay in memory and are cleared on disconnect or app exit.
+3. Find your game and click **Download**. **Save PSN JSON** creates a credential-free progress backup; **Open PSN JSON** lets you use a previously saved download offline.
+4. Select a **Local backup** and click **Preview merge**. The PSN Account ID must match the DAT owner. If necessary, use **Change owner**, export the DAT, and reopen that exported copy first. The local user ID remains the one in your selected DAT.
+5. Review the added trophies and destination path, then **Export merged DAT (experimental)**. It creates a fresh folder and report; source files remain unchanged.
+
+Merging keeps every existing local unlock and its local timestamp, including when PSN has a different date. It adds only PSN-earned trophies that are locked locally, using their PSN dates. It requires the same PS5 trophy set and catalog version. PS3/PS4 progress can be downloaded and inspected, but cannot be merged into a PS5 DAT.
+
+**The progress writer is experimental and has not yet been restored on a console.** The original owner-transfer feature was tested separately. Keep your original DAT and follow the game/catalog preparation steps above before testing an exported merge.
+
+For source builds and validation details, see [DEVELOPMENT.md](DEVELOPMENT.md).

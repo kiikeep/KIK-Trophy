@@ -631,6 +631,7 @@ async function switchLanguage(lang) {
   localStorage.setItem("kik-language", lang);
   $("languageMenu").classList.add("hidden");
   window.I18N.apply();
+  window.dispatchEvent(new Event("kik-languagechange"));
   closeDrawer();
   try {
     const updated = await window.kik.setLanguage(lang);
@@ -663,3 +664,15 @@ $("status").textContent = L(
 window.kik
   .setLanguage(window.I18N.lang)
   .catch((e) => message(errorText(e), true));
+
+window.KIK_APP = {
+  backups: () =>
+    records.map((r) => ({
+      key: r.key,
+      npwr: r.npwr,
+      title: r.title,
+      uid: r.uid,
+    })),
+  currentKey: () => selected,
+  notify: message,
+};

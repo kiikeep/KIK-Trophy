@@ -40,7 +40,7 @@ async function rememberForExport(t) {
     return { rememberError: String(error.message || error) };
   }
 }
-let win;
+let win, psnHandlers;
 const records = new Map(),
   catalogs = new Map(),
   openedPaths = new Set();
@@ -218,9 +218,20 @@ app.whenReady().then(() => {
   });
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   win.webContents.on("will-navigate", (e) => e.preventDefault());
+  psnHandlers = require("./psn-main.cjs").installPsnHandlers({
+    ipcMain,
+    dialog,
+    win: () => win,
+    sender,
+    record,
+    catalogs,
+    fileBytes,
+    shell,
+  });
   win.loadFile(HTML);
 });
 app.on("window-all-closed", async () => {
+  psnHandlers?.close();
   await identityStore.flush();
   app.quit();
 });

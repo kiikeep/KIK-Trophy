@@ -1365,3 +1365,209 @@ html[lang="ja"] .backupPaths b {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.psnPanel {
+  color: var(--text);
+  background: #101722;
+  border: 1px solid #385347;
+  border-radius: 16px;
+  width: min(1120px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  padding: 26px;
+  overflow: auto;
+  box-shadow: 0 25px 100px #000b;
+}
+.psnPanel::backdrop {
+  background: #03080bd9;
+  backdrop-filter: blur(5px);
+}
+.psnTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.psnTop h2 {
+  margin: 8px 0 10px;
+  font-size: 28px;
+}
+.psnPanel input,
+.psnPanel select {
+  background: #0d141e;
+  color: var(--text);
+  border: 1px solid #36485f;
+  border-radius: 7px;
+  padding: 10px;
+  max-width: 100%;
+  min-width: 0;
+}
+.psnPanel label {
+  display: block;
+  font-size: 11px;
+  color: #9ab0c7;
+  margin: 12px 0 6px;
+}
+.psnCredentials {
+  padding: 16px;
+  border-radius: 10px;
+  background: #1b2734;
+  margin: 18px 0;
+}
+.psnCredentials p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.psnAuthLinks {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+}
+.psnCredentials input {
+  width: min(480px, 75%);
+  margin-right: 10px;
+}
+.psnProfile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #19352a;
+  border: 1px solid #315446;
+  padding: 15px 18px;
+  border-radius: 10px;
+  margin: 16px 0;
+}
+.psnProfile strong {
+  font-size: 20px;
+}
+.psnProfile p {
+  margin: 8px 0;
+  font-size: 12px;
+}
+.psnProfile code {
+  font-size: 10px;
+  color: #9ec3af;
+}
+.psnGrid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.3fr);
+  gap: 22px;
+  margin-top: 20px;
+}
+.psnLibrary {
+  border-right: 1px solid var(--border);
+  padding-right: 18px;
+}
+.psnToolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.psnToolbar strong {
+  font-size: 12px;
+}
+.psnLibrary input {
+  width: 100%;
+}
+.psnTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+.psnTitle > div {
+  min-width: 0;
+}
+.psnTitle strong {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.psnTitle small {
+  display: block;
+  font:
+    10px Consolas,
+    monospace;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.psnTitle button {
+  flex-shrink: 0;
+  font-size: 11px;
+  padding: 8px;
+}
+#psnTitles {
+  max-height: 440px;
+  overflow: auto;
+}
+.psnHint,
+.psnEmpty {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.psnTable {
+  overflow: auto;
+  max-height: 250px;
+  margin-top: 12px;
+}
+.psnTable table {
+  min-width: 0;
+  width: 100%;
+}
+.psnTable th,
+.psnTable td {
+  padding: 9px;
+  font-size: 10px;
+}
+.psnMerge {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.psnMerge h3 {
+  font-size: 16px;
+}
+.psnMerge select {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.psnChanges {
+  font-size: 10px;
+  max-height: 130px;
+  overflow: auto;
+  line-height: 1.9;
+  margin-top: 12px;
+}
+.psnExperimental {
+  color: #f2d38d;
+  font-size: 11px;
+  line-height: 1.7;
+}
+#psnExport {
+  margin-top: 16px;
+}
+#psnPanel button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.headerActions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 58%;
+}
+header > div:first-child {
+  min-width: 0;
+}
+@media (max-width: 1200px) {
+  header h1 {
+    font-size: 23px;
+  }
+  header .subtitle {
+    font-size: 11px;
+  }
+  .psnGrid {
+    grid-template-columns: 310px minmax(0, 1fr);
+  }
+}
