@@ -88,17 +88,17 @@ function makeUcp(npwr, count = 3, extraLanguages = true) {
 function makeDat(
   npwr,
   ucp,
-  { uid = OLD_UID, account = OLD_ACCOUNT, count = 3, earned = [1, 2] } = {},
+  { uid = OLD_UID, account = OLD_ACCOUNT, count = 3, earned = [1, 2], groupCount = 1 } = {},
 ) {
   const defs = [
     [1, 0x30, 1],
     [2, 0x60, 1],
     [0x100, 0x40, 1],
     [0x300, 0x480, 1],
-    [0x400, 0x90, 1],
+    [0x400, 0x90, groupCount],
     [0x500, 0xc0, count],
     [0x600, 0x1f0, 1],
-    [0x700, 0xb0, 1],
+    [0x700, 0xb0, groupCount],
     [0x800, 0x50, count],
   ];
   let off = 0x150;

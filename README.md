@@ -1,14 +1,37 @@
-# KIK Trophy 1.0
+# KIK Trophy 1.3.2
 
-**Move your PS5 trophy progress to another local user while preserving unlocked trophies and their original timestamps.**
+**Transfer PS5 trophy progress between local users and restore trophies downloaded from PSN.**
 
 Useful after creating a new user or reinstalling/resetting your console, when you want to restore trophies from an earlier backup. Work with one game or several at once.
 
-[Download for Windows](https://github.com/kiikeep/KIK-Trophy/releases) · [Español](README.es.md)
+[Download for Windows](https://github.com/kiikeep/KIK-Trophy/releases/latest) · [Source code](https://github.com/kiikeep/KIK-Trophy/releases/latest) · [Español](README.es.md)
 
 Windows 10/11 x64, Intel or AMD. Extract the entire ZIP and open **KIK Trophy.exe**.
 
+- Browse your PSN games and download trophy progress with original unlock dates.
+- Merge PSN progress into an existing local DAT; choose local or PSN dates for shared trophies.
+- Keep an encrypted remembered PSN session, or save credential-free JSON trophy backups for offline use.
+- Transfer one game or a batch to another local user. Source files remain unchanged.
+
 <img width="1632" height="1180" alt="{5C848C2A-62E2-4A17-B0A4-EEA65D9BFC38}" src="https://github.com/user-attachments/assets/158f34f3-114b-4635-b28b-c9ee9274f59f" />
+
+## New: download and merge from PSN
+
+**PSN online** downloads the trophy progress already synced to your Sony account. You can inspect it, save a PSN JSON backup, and add missing unlocks to a local PS5 `TRPTITLE.DAT`. This does not upload trophies to PSN.
+
+1. Open your local backup folder or ZIP, including its `TRPTITLE.DAT` and matching `TROPHY.UCP` catalog.
+2. Click **PSN online**, then **1. Sony sign-in**. Sign in using your own browser. **2. Get NPSSO** opens Sony's session endpoint; paste its NPSSO value or JSON into the app and click **Connect**. KIK Trophy remembers your session on this Windows account using encrypted storage. Closing the app keeps it; **Disconnect** removes it. You may need a fresh NPSSO if Sony expires or revokes the session.
+3. Find your game and click **Download**. **Save PSN JSON** creates a credential-free progress backup; **Open PSN JSON** lets you use a previously saved download offline.
+4. Select a **Local backup** and click **Preview merge**. The PSN Account ID must match the DAT owner. If necessary, use **Change owner**, export the DAT, and reopen that exported copy first. The local user ID remains the one in your selected DAT.
+5. Review the added trophies and destination path, then **Export merged DAT**. It creates a fresh folder and report; source files remain unchanged.
+
+Merging keeps every existing local unlock. **Dates for shared trophies** lets you choose **Keep local dates** (default) or **Use PSN dates** for trophies earned in both sources. New PSN unlocks use their PSN date; local-only trophies keep their local date. Preview lists any date replacements, and you can export date-only changes even if there are no new trophies. It requires the same PS5 trophy set and matching trophy IDs, count and grades. Version numbers alone do not block a merge; both version strings are recorded in the export report. PS3/PS4 progress can be downloaded and inspected, but cannot be merged into a PS5 DAT.
+
+**A DAT for that game must already exist before merging. Launch the game at least once on your PS5, close it, then copy its DAT and matching TROPHY.UCP to your PC.**
+
+PSN trophy merging and restoration have been confirmed on PS5 with ASTRO’s PLAYROOM. Keep a copy of your original DAT and follow the game/catalog preparation steps below before restoring an export.
+
+For source builds and validation details, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Which files do you need?
 
@@ -104,6 +127,6 @@ Keep the filename `TRPTITLE.DAT` and check the user and game identifiers. The ex
 
 ---
 
-Tested with **Ratchet & Clank: Rift Apart** and **ASTRO BOT**. The tool transfers existing progress; it does not unlock new trophies or sync with PSN.
+Owner transfers tested with **Ratchet & Clank: Rift Apart** and **ASTRO BOT**. PSN downloading and merging are described above.
 
 Created by **kiikeep** · [MIT License](LICENSE)

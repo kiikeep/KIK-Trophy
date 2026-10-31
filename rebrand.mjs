@@ -22,13 +22,13 @@ for (const g of groups)
     ico.icons.map((i) => i.data),
   );
 for (const vi of R.Resource.VersionInfo.fromEntries(res.entries)) {
-  vi.setFileVersion(1, 0, 0, 0, 1033);
-  vi.setProductVersion(1, 0, 0, 0, 1033);
+  vi.setFileVersion(1, 3, 2, 0, 1033);
+  vi.setProductVersion(1, 3, 2, 0, 1033);
   vi.setStringValues(
     { lang: 1033, codepage: 1200 },
     {
-      FileVersion: "1.0",
-      ProductVersion: "1.0",
+      FileVersion: "1.3.2",
+      ProductVersion: "1.3.2",
       FileDescription: "KIK Trophy Desktop",
       ProductName: "KIK Trophy",
       CompanyName: "kiikeep",

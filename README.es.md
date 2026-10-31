@@ -1,12 +1,30 @@
-# KIK Trophy 1.0
+# KIK Trophy 1.3.2
 
-**Transfiere tu progreso de trofeos de PS5 a otro usuario local, conservando los desbloqueos y sus fechas originales.**
+**Transfiere el progreso de trofeos de PS5 entre usuarios locales y restaura trofeos descargados desde PSN.**
 
 Útil si creaste un usuario nuevo o reinstalaste/formateaste tu consola y quieres recuperar los trofeos de un respaldo anterior. Puedes trabajar con un juego o con varios a la vez.
 
-[Descargar para Windows](https://github.com/kiikeep/KIK-Trophy/releases) · [English](README.md)
+[Descargar para Windows](https://github.com/kiikeep/KIK-Trophy/releases/latest) · [Código fuente](https://github.com/kiikeep/KIK-Trophy/releases/latest) · [English](README.md)
 
 Para Windows 10/11 de 64 bits, Intel o AMD. Extrae el ZIP completo y abre **KIK Trophy.exe**.
+
+## Novedad: descargar y combinar desde PSN
+
+**PSN en línea** descarga el progreso que ya está sincronizado con tu cuenta de Sony. Permite consultarlo, guardarlo como JSON y añadir desbloqueos faltantes a un `TRPTITLE.DAT` local de PS5. No sube trofeos a PSN.
+
+1. Abre tu carpeta o ZIP local, incluyendo el `TRPTITLE.DAT` y su catálogo `TROPHY.UCP` correspondiente.
+2. Abre **PSN en línea** y pulsa **1. Iniciar sesión en Sony**. Inicia sesión en tu navegador. **2. Obtener NPSSO** abre el endpoint de sesión de Sony: pega su valor NPSSO o su JSON en la aplicación y pulsa **Conectar**. KIK Trophy recuerda tu sesión mediante almacenamiento cifrado para esta cuenta de Windows. Cerrar la aplicación la conserva; **Desconectar** la elimina. Si Sony la vence o revoca, necesitarás un NPSSO nuevo.
+3. Busca el juego y pulsa **Descargar**. **Guardar JSON de PSN** crea un respaldo del progreso sin credenciales; **Abrir JSON de PSN** permite usar una descarga guardada sin conexión.
+4. Selecciona un **Backup local** y pulsa **Vista previa del merge**. El Account ID de PSN debe coincidir con el propietario del DAT. Si hace falta, usa **Change owner**, exporta y vuelve a abrir ese DAT primero. Se conserva el ID local del DAT seleccionado.
+5. Revisa los trofeos añadidos y la ruta de destino, y pulsa **Exportar DAT combinado**. Se crea una carpeta nueva con un reporte; los originales permanecen intactos.
+
+El merge conserva todos los desbloqueos locales. **Fechas de trofeos en ambas fuentes** permite elegir **Conservar fechas locales** (predeterminado) o **Usar fechas de PSN** para los trofeos desbloqueados en ambas fuentes. Los trofeos nuevos usan su fecha de PSN y los que solo existen localmente conservan su fecha local. La vista previa detalla los reemplazos y permite exportar aunque solo cambien fechas. Requiere el mismo conjunto de trofeos de PS5 y coincidencia de IDs, cantidad y tipos. El número de versión por sí solo no bloquea el merge; ambas versiones quedan registradas en el reporte. Puedes descargar y consultar PS3/PS4, pero no combinarlos con un DAT de PS5.
+
+**Antes del merge debe existir un DAT de ese juego. Abre el juego al menos una vez en tu PS5, ciérralo y copia su DAT y el TROPHY.UCP correspondiente al PC.**
+
+El merge de PSN y su restauración se han confirmado en PS5 con ASTRO’s PLAYROOM. Conserva una copia del DAT original y prepara el juego y su catálogo como se explica abajo antes de restaurar un archivo exportado.
+
+Instrucciones para compilar y detalles de validación: [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Qué archivos necesitas
 
@@ -102,6 +120,6 @@ Conserva el nombre `TRPTITLE.DAT` y comprueba que coincidan el usuario y el iden
 
 ---
 
-Probado con **Ratchet & Clank: Rift Apart** y **ASTRO BOT**. La herramienta transfiere progreso existente; no desbloquea trofeos nuevos ni sincroniza con PSN.
+Cambio de propietario probado con **Ratchet & Clank: Rift Apart** y **ASTRO BOT**. La descarga de PSN y el merge se explican arriba.
 
 Creado por **kiikeep** · [Licencia MIT](LICENSE)

@@ -253,6 +253,7 @@ function parseUcp(buf, language = "en") {
           grade: t.grade || "?",
           hidden: !!t.hidden,
           group: t.groupId || "0000",
+          unlockComparator: t.unlockCondition?.comparator || null,
           trophyIcon: image("trop" + String(t.id).padStart(4, "0") + ".png"),
         },
       ];

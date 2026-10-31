@@ -1,7 +1,10 @@
 name: Build Windows portable app
 on:
+  pull_request:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - "v*"
 permissions:
@@ -9,6 +12,8 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.archive.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,13 +22,61 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm run test:session:win
       - run: npx playwright install chromium
       - run: npm run test:ui
       - run: npm run package:win
-      - name: Archive portable app
+      - name: Archive portable app and source
+        id: archive
         shell: pwsh
-        run: Compress-Archive -Path dist/KIK-Trophy-win32-x64 -DestinationPath KIK-Trophy-v1.0-Windows-x64.zip
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
+          $windows = "KIK-Trophy-v${version}-Windows-x64.zip"
+          $source = "KIK-Trophy-v${version}-Source.zip"
+          Copy-Item LICENSE dist/KIK-Trophy-win32-x64/LICENSE.KIK-Trophy.txt
+          Copy-Item README.md, README.es.md, DEVELOPMENT.md, RELEASE_NOTES.md dist/KIK-Trophy-win32-x64/
+          Compress-Archive -Path dist/KIK-Trophy-win32-x64 -DestinationPath $windows
+          git archive --format=zip --prefix="KIK-Trophy-v${version}-Source/" --output=$source HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Source archive failed' }
+          @($windows, $source) | ForEach-Object {
+            $hash = (Get-FileHash $_ -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $_"
+          } | Set-Content SHA256SUMS.txt -Encoding ascii
+          "version=$version" >> $env:GITHUB_OUTPUT
       - uses: actions/upload-artifact@v4
         with:
-          name: KIK-Trophy-v1.0-Windows-x64
-          path: KIK-Trophy-v1.0-Windows-x64.zip
+          name: KIK-Trophy-v${{ steps.archive.outputs.version }}
+          path: |
+            KIK-Trophy-v${{ steps.archive.outputs.version }}-Windows-x64.zip
+            KIK-Trophy-v${{ steps.archive.outputs.version }}-Source.zip
+            SHA256SUMS.txt
+  publish:
+    needs: windows
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[publish-release]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: KIK-Trophy-v${{ needs.windows.outputs.version }}
+          path: assets
+      - name: Publish tested release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.windows.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          (cd assets && sha256sum -c SHA256SUMS.txt)
+          tag="v$VERSION"
+          gh release create "$tag" \
+            "assets/KIK-Trophy-v${VERSION}-Windows-x64.zip" \
+            "assets/KIK-Trophy-v${VERSION}-Source.zip" \
+            assets/SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "KIK Trophy $VERSION" --notes-file RELEASE_NOTES.md --draft
+          gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --draft=false --latest
