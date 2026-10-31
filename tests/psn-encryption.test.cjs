@@ -1,52 +1,58 @@
 "use strict";
-// Runs in Electron on Windows, exercising real safeStorage/DPAPI across processes.
-const { app, safeStorage } = require("electron"),
-  fs = require("node:fs/promises"),
+// Node driver runs two consecutive Electron processes: a genuine close/reopen.
+const fs = require("node:fs/promises"),
   syncFs = require("node:fs"),
   os = require("node:os"),
   path = require("node:path"),
   assert = require("node:assert/strict"),
-  { spawnSync } = require("node:child_process"),
-  { createSessionStore } = require("../app/psn-session.cjs");
-const child = process.argv[2] === "--check-session";
-const dir = child
-  ? process.argv[3]
-  : syncFs.mkdtempSync(path.join(os.tmpdir(), "kik-dpapi-"));
-app.setPath("userData", dir);
-app.disableHardwareAcceleration();
-app.whenReady().then(async () => {
+  { spawnSync } = require("node:child_process");
+const value = "synthetic-refresh-token-for-native-encryption-test";
+if (!process.versions.electron) {
+  const dir = syncFs.mkdtempSync(path.join(os.tmpdir(), "kik-dpapi-"));
   try {
     assert.equal(process.platform, "win32");
-    assert(safeStorage.isEncryptionAvailable());
-    const store = createSessionStore({ directory: dir, safeStorage }),
-      value = "synthetic-refresh-token-for-native-encryption-test";
-    if (child) {
-      assert.equal((await store.load()).refreshToken, value);
-      app.exit(0);
-      return;
+    for (const mode of ["--write", "--read"]) {
+      const next = spawnSync(require("electron"), [__filename, mode, dir], {
+        encoding: "utf8",
+        timeout: 30000,
+        windowsHide: true,
+      });
+      assert.equal(
+        next.status,
+        0,
+        String(next.error || next.stderr || next.stdout),
+      );
     }
-    await store.save({ refreshToken: value });
-    const bytes = await fs.readFile(path.join(dir, "psn-session.bin"));
-    assert(!bytes.includes(value));
-    const next = spawnSync(
-      process.execPath,
-      [__filename, "--check-session", dir],
-      { encoding: "utf8", timeout: 30000, windowsHide: true },
-    );
-    assert.equal(
-      next.status,
-      0,
-      String(next.error || next.stderr || next.stdout),
-    );
-    await store.clear();
-    assert.equal(await store.load(), null);
     console.log(
-      "PASS: real Windows safeStorage/DPAPI encryption, recovery in a fresh Electron process and saved-session deletion",
+      "PASS: real Windows safeStorage/DPAPI encryption, recovery after Electron exits and a new process starts, and saved-session deletion",
     );
-    await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
-    app.exit(0);
-  } catch (e) {
-    console.error(e);
-    app.exit(1);
+  } finally {
+    syncFs.rmSync(dir, { recursive: true, force: true });
   }
-});
+} else {
+  const { app, safeStorage } = require("electron"),
+    { createSessionStore } = require("../app/psn-session.cjs"),
+    dir = process.argv[3];
+  app.setPath("userData", dir);
+  app.disableHardwareAcceleration();
+  app.whenReady().then(async () => {
+    try {
+      assert(safeStorage.isEncryptionAvailable());
+      const store = createSessionStore({ directory: dir, safeStorage });
+      if (process.argv[2] === "--write") {
+        await store.save({ refreshToken: value });
+        const bytes = await fs.readFile(path.join(dir, "psn-session.bin"));
+        assert(!bytes.includes(value));
+      } else {
+        assert.equal((await store.load()).refreshToken, value);
+        await store.clear();
+        assert.equal(await store.load(), null);
+      }
+      await store.flush();
+      app.quit();
+    } catch (e) {
+      console.error(e);
+      app.exit(1);
+    }
+  });
+}

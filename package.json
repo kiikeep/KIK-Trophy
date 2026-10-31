@@ -8,7 +8,7 @@
     "test:ui": "node tests/ui.test.cjs && node tests/psn-ui.test.cjs",
     "package:win": "npm run build:psn && electron-packager app KIK-Trophy --electron-version=44.7.2 --platform=win32 --arch=x64 --out=dist --overwrite --icon=app/icon.ico --executable-name=\"KIK Trophy\" --app-version=1.2.0 --build-version=1.2.0 --win32metadata.CompanyName=kiikeep --win32metadata.ProductName=\"KIK Trophy\" && node rebrand.mjs dist/KIK-Trophy-win32-x64",
     "build:psn": "node scripts/build-psn.cjs",
-    "test:session:win": "electron tests/psn-encryption.test.cjs"
+    "test:session:win": "node tests/psn-encryption.test.cjs"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",
